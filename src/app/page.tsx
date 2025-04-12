@@ -1,103 +1,108 @@
-import Image from "next/image";
+"use client";
+import { useEffect, useState, useMemo } from "react";
+import Header from "../components/Header";
+import FilterSection from "../components/FilterSection";
+import CompSection from "../components/CompSection";
+import Footer from "../components/Footer";
+
+// Define a type for a single comp solution.
+interface CompData {
+  selected_champions: string[];
+  activated_traits: string[];
+  total_cost?: number;
+}
+
+// Type for the precomputed comps object.
+interface PrecomputedComps {
+  [key: string]: {
+    min_champion_count: number;
+    solutions: CompData[];
+  };
+}
+
+/**
+ * Helper function to convert the filters object into a lookup key.
+ * Returns "none" if no bonus is applied; otherwise,
+ * returns a comma-separated string of "Trait:Value" pairs in sorted order.
+ */
+function bonusDictToKey(filters: Record<string, number>): string {
+  const items = Object.entries(filters)
+      .filter(([, v]) => v > 0)
+      .sort(([a], [b]) => a.localeCompare(b));
+  if (items.length === 0) return "none";
+  return items.map(([k, v]) => `${k}:${v}`).join(",");
+}
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const [filters, setFilters] = useState<Record<string, number>>({});
+  const [comps, setComps] = useState<PrecomputedComps>({});
+  const [loading, setLoading] = useState(true);
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+  // Compute the lookup key from the filters.
+  const lookupKey = useMemo(() => bonusDictToKey(filters), [filters]);
+  console.log("Computed Lookup Key:", lookupKey);
+
+  // Single useEffect to fetch comps whenever the lookupKey changes.
+  useEffect(() => {
+    async function fetchFilteredComps() {
+      setLoading(true);
+      try {
+        console.log("Fetching comps for lookupKey:", lookupKey);
+        const res = await fetch(`/api/comps?filterKey=${encodeURIComponent(lookupKey)}`);
+        if (!res.ok) throw new Error("Failed to fetch comps");
+        const data = (await res.json()) as PrecomputedComps;
+        console.log("Fetched filtered comps keys:", Object.keys(data));
+        setComps(data);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchFilteredComps();
+  }, [lookupKey]);
+
+  // Determine if no filters are applied.
+  const totalBonus = Object.values(filters).reduce((acc, val) => acc + val, 0);
+  const noFilter = totalBonus === 0;
+  // If no filters and "none" exists, use it; otherwise, use the full comps object.
+  const compsToRender: PrecomputedComps =
+      noFilter && comps["none"] ? { none: comps["none"] } : comps;
+
+  // Flatten all solutions from compsToRender into one array.
+  const allSolutions: CompData[] = Object.entries(compsToRender).reduce(
+      (acc, [, compInfo]) => acc.concat(compInfo.solutions ?? []),
+      [] as CompData[]
+  );
+
+  console.log("Number of solutions to render:", allSolutions.length);
+
+  return (
+      <div className="min-h-screen flex flex-col bg-zinc-950">
+        <Header />
+        <main className="flex-grow container mx-auto px-4 py-8">
+          <FilterSection filters={filters} setFiltersAction={setFilters} />
+          {loading ? (
+              <div className="flex justify-center py-12">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-zinc-500"></div>
+              </div>
+          ) : (
+              <div className="space-y-6">
+                {allSolutions.length > 0 ? (
+                    allSolutions.map((solution, idx) => (
+                        <CompSection key={idx} compData={solution} />
+                    ))
+                ) : (
+                    <div className="text-center py-12 bg-zinc-900 rounded-lg border border-zinc-800">
+                      <p className="text-zinc-400">
+                        No compositions found. Try adjusting your filters.
+                      </p>
+                    </div>
+                )}
+              </div>
+          )}
+        </main>
+        <Footer />
+      </div>
   );
 }
