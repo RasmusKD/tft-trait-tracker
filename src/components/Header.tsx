@@ -1,55 +1,65 @@
 "use client";
 import { useState } from "react";
 import Image from "next/image";
-import { Info, X } from "lucide-react";
+import { LuInfo } from "react-icons/lu";
+import Modal from "./Modal";
 
 export default function Header() {
-    const [showModal, setShowModal] = useState(false);
+    const [helpOpen, setHelpOpen] = useState(false);
 
     return (
         <>
-            <header className="flex items-center justify-between px-6 py-4 bg-zinc-900 border-b border-zinc-800 shadow-md">
-                <div className="flex items-center gap-3">
-                    <div className="relative w-16 h-16">
-                        <Image
-                            src="/logo.png"
-                            alt="Trait Tracker Logo"
-                            fill
-                            className="object-contain drop-shadow-[0_0_8px_rgba(255,255,255,0.5)] select-none"
-                            draggable={false}
-                            priority
-                        />
+            <header className="bg-zinc-900 border-b border-zinc-800 shadow-md">
+                <div className="container mx-auto px-6 py-4 flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                        <div className="relative w-16 h-16">
+                            <Image
+                                src="/logo.png"
+                                alt="Trait Tracker Logo"
+                                fill
+                                sizes="64px"
+                                className="object-contain drop-shadow-[0_0_8px_rgba(255,255,255,0.5)] select-none"
+                                draggable={false}
+                                priority
+                            />
+                        </div>
+                        <h1 className="text-2xl font-bold text-white tracking-tight select-none">
+                            Trait Tracker
+                        </h1>
                     </div>
-                    <h1 className="text-2xl font-bold text-white tracking-tight select-none">
-                        Trait Tracker
-                    </h1>
+                    <button
+                        onClick={() => setHelpOpen(true)}
+                        className="p-2 text-zinc-200 hover:text-white hover:bg-zinc-800 rounded cursor-pointer"
+                    >
+                        <LuInfo className="w-6 h-6"/>
+                        <span className="sr-only">How the Tool Works</span>
+                    </button>
                 </div>
-                <button
-                    onClick={() => setShowModal(true)}
-                    className="p-2 text-zinc-200 hover:text-white hover:bg-zinc-800 rounded"
-                >
-                    <Info className="w-6 h-6" />
-                    <span className="sr-only">About</span>
-                </button>
             </header>
 
-            {showModal && (
-                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-                    <div className="bg-zinc-900 border border-zinc-800 text-zinc-100 max-w-md w-full p-6 relative rounded">
-                        <button
-                            onClick={() => setShowModal(false)}
-                            className="absolute top-2 right-2 text-white hover:text-gray-400"
-                        >
-                            <X className="w-6 h-6" />
-                            <span className="sr-only">Close</span>
-                        </button>
-                        <h2 className="text-xl font-bold mb-2">About Trait Tracker</h2>
-                        <p className="text-zinc-300">
-                            Trait Tracker helps you rapidly lookup and optimize team compositions for Teamfight Tactics using precomputed data.
-                        </p>
-                    </div>
-                </div>
-            )}
+            <Modal title="How the Tool Works" isOpen={helpOpen} onClose={() => setHelpOpen(false)}>
+                <p>
+                    Traittracker.gg helps you easily activate <strong>8 different traits</strong> in a single round —
+                    the requirement to trigger the <strong>Trait Tracker augment</strong> in TFT.
+                </p>
+                <p className="mt-2">
+                    When active, the augment gives you <strong>6 random emblems</strong>, so it’s a huge power spike.
+                    But finding the right trait combination can be tricky — especially during a game.
+                </p>
+                <p className="mt-2">
+                    This tool shows you the <strong>lowest-cost comps</strong> that meet the requirement, using real
+                    precomputed data for speed. You can filter by emblems or bonuses you already have, and the results
+                    update instantly.
+                </p>
+                <p className="mt-2">
+                    It’s designed to be fast, simple, and effective — whether you’re playing seriously or just want to
+                    cash out your augment.
+                </p>
+                <p className="pt-4 mt-6 text-xs text-zinc-500 border-t">
+                    Traittracker.gg is a fan-made tool and is not endorsed by Riot Games. All Teamfight Tactics content
+                    and assets are © Riot Games.
+                </p>
+            </Modal>
         </>
     );
 }

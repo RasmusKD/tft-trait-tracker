@@ -1,0 +1,440 @@
+{
+    "units": {
+        "Alistar": {
+            "traits": [
+                "Golden Ox",
+                "Bruiser"
+            ],
+            "champion_tier": 1
+        },
+        "Dr. Mundo": {
+            "traits": [
+                "Street Demon",
+                "Bruiser",
+                "Slayer"
+            ],
+            "champion_tier": 1
+        },
+        "Jax": {
+            "traits": [
+                "Exotech",
+                "Bastion"
+            ],
+            "champion_tier": 1
+        },
+        "Kindred": {
+            "traits": [
+                "Nitro",
+                "Rapidfire",
+                "Marksman"
+            ],
+            "champion_tier": 1
+        },
+        "Kog'Maw": {
+            "traits": [
+                "BoomBot",
+                "Rapidfire"
+            ],
+            "champion_tier": 1
+        },
+        "Morgana": {
+            "traits": [
+                "Divinicorp",
+                "Dynamo"
+            ],
+            "champion_tier": 1
+        },
+        "Nidalee": {
+            "traits": [
+                "Nitro",
+                "A.M.P"
+            ],
+            "champion_tier": 1
+        },
+        "Poppy": {
+            "traits": [
+                "Cyberboss",
+                "Bastion"
+            ],
+            "champion_tier": 1
+        },
+        "Seraphine": {
+            "traits": [
+                "Anima Squad",
+                "Techie"
+            ],
+            "champion_tier": 1
+        },
+        "Shaco": {
+            "traits": [
+                "Syndicate",
+                "Slayer"
+            ],
+            "champion_tier": 1
+        },
+        "Sylas": {
+            "traits": [
+                "Anima Squad",
+                "Vanguard"
+            ],
+            "champion_tier": 1
+        },
+        "Vi": {
+            "traits": [
+                "Cypher",
+                "Vanguard"
+            ],
+            "champion_tier": 1
+        },
+        "Zyra": {
+            "traits": [
+                "Street Demon",
+                "Techie"
+            ],
+            "champion_tier": 1
+        },
+        "Darius": {
+            "traits": [
+                "Syndicate",
+                "Bruiser"
+            ],
+            "champion_tier": 2
+        },
+        "Ekko": {
+            "traits": [
+                "Street Demon",
+                "Strategist"
+            ],
+            "champion_tier": 2
+        },
+        "Graves": {
+            "traits": [
+                "Golden Ox",
+                "Executioner"
+            ],
+            "champion_tier": 2
+        },
+        "Illaoi": {
+            "traits": [
+                "Anima Squad",
+                "Bastion"
+            ],
+            "champion_tier": 2
+        },
+        "Jhin": {
+            "traits": [
+                "Exotech",
+                "Marksman",
+                "Dynamo"
+            ],
+            "champion_tier": 2
+        },
+        "LeBlanc": {
+            "traits": [
+                "Cypher",
+                "Strategist"
+            ],
+            "champion_tier": 2
+        },
+        "Naafiri": {
+            "traits": [
+                "Exotech",
+                "A.M.P"
+            ],
+            "champion_tier": 2
+        },
+        "Rhaast": {
+            "traits": [
+                "Divinicorp",
+                "Vanguard"
+            ],
+            "champion_tier": 2
+        },
+        "Shyvana": {
+            "traits": [
+                "Nitro",
+                "Bastion",
+                "Techie"
+            ],
+            "champion_tier": 2
+        },
+        "Skarner": {
+            "traits": [
+                "BoomBot",
+                "Vanguard"
+            ],
+            "champion_tier": 2
+        },
+        "Twisted Fate": {
+            "traits": [
+                "Syndicate",
+                "Rapidfire"
+            ],
+            "champion_tier": 2
+        },
+        "Vayne": {
+            "traits": [
+                "Anima Squad",
+                "Slayer"
+            ],
+            "champion_tier": 2
+        },
+        "Veigar": {
+            "traits": [
+                "Cyberboss",
+                "Techie"
+            ],
+            "champion_tier": 2
+        },
+        "Braum": {
+            "traits": [
+                "Syndicate",
+                "Vanguard"
+            ],
+            "champion_tier": 3
+        },
+        "Draven": {
+            "traits": [
+                "Cypher",
+                "Rapidfire"
+            ],
+            "champion_tier": 3
+        },
+        "Elise": {
+            "traits": [
+                "Nitro",
+                "Dynamo"
+            ],
+            "champion_tier": 3
+        },
+        "Fiddlesticks": {
+            "traits": [
+                "BoomBot",
+                "Techie"
+            ],
+            "champion_tier": 3
+        },
+        "Galio": {
+            "traits": [
+                "Cypher",
+                "Bastion"
+            ],
+            "champion_tier": 3
+        },
+        "Gragas": {
+            "traits": [
+                "Divinicorp",
+                "Bruiser"
+            ],
+            "champion_tier": 3
+        },
+        "Jarvan IV": {
+            "traits": [
+                "Golden Ox",
+                "Vanguard",
+                "Slayer"
+            ],
+            "champion_tier": 3
+        },
+        "Jinx": {
+            "traits": [
+                "Street Demon",
+                "Marksman"
+            ],
+            "champion_tier": 3
+        },
+        "Mordekaiser": {
+            "traits": [
+                "Exotech",
+                "Bruiser",
+                "Techie"
+            ],
+            "champion_tier": 3
+        },
+        "Rengar": {
+            "traits": [
+                "Street Demon",
+                "Executioner"
+            ],
+            "champion_tier": 3
+        },
+        "Senna": {
+            "traits": [
+                "Divinicorp",
+                "Slayer"
+            ],
+            "champion_tier": 3
+        },
+        "Varus": {
+            "traits": [
+                "Exotech",
+                "Executioner"
+            ],
+            "champion_tier": 3
+        },
+        "Yuumi": {
+            "traits": [
+                "Anima Squad",
+                "A.M.P",
+                "Strategist"
+            ],
+            "champion_tier": 3
+        },
+        "Annie": {
+            "traits": [
+                "Golden Ox",
+                "A.M.P"
+            ],
+            "champion_tier": 4
+        },
+        "Aphelios": {
+            "traits": [
+                "Golden Ox",
+                "Marksman"
+            ],
+            "champion_tier": 4
+        },
+        "Brand": {
+            "traits": [
+                "Street Demon",
+                "Techie"
+            ],
+            "champion_tier": 4
+        },
+        "Cho'Gath": {
+            "traits": [
+                "BoomBot",
+                "Bruiser"
+            ],
+            "champion_tier": 4
+        },
+        "Leona": {
+            "traits": [
+                "Anima Squad",
+                "Vanguard"
+            ],
+            "champion_tier": 4
+        },
+        "Miss Fortune": {
+            "traits": [
+                "Syndicate",
+                "Dynamo"
+            ],
+            "champion_tier": 4
+        },
+        "Neeko": {
+            "traits": [
+                "Street Demon",
+                "Strategist"
+            ],
+            "champion_tier": 4
+        },
+        "Sejuani": {
+            "traits": [
+                "Exotech",
+                "Bastion"
+            ],
+            "champion_tier": 4
+        },
+        "Vex": {
+            "traits": [
+                "Divinicorp",
+                "Executioner"
+            ],
+            "champion_tier": 4
+        },
+        "Xayah": {
+            "traits": [
+                "Anima Squad",
+                "Marksman"
+            ],
+            "champion_tier": 4
+        },
+        "Zed": {
+            "traits": [
+                "Cypher",
+                "Divinicorp"
+            ],
+            "champion_tier": 4
+        },
+        "Zeri": {
+            "traits": [
+                "Exotech",
+                "Rapidfire"
+            ],
+            "champion_tier": 4
+        },
+        "Ziggs": {
+            "traits": [
+                "Cyberboss",
+                "Strategist"
+            ],
+            "champion_tier": 4
+        },
+        "Aurora": {
+            "traits": [
+                "Anima Squad",
+                "Dynamo"
+            ],
+            "champion_tier": 5
+        },
+        "Kobuko": {
+            "traits": [
+                "Cyberboss",
+                "Bruiser"
+            ],
+            "champion_tier": 5
+        },
+        "Renekton": {
+            "traits": [
+                "Divinicorp",
+                "Bastion"
+            ],
+            "champion_tier": 5
+        },
+        "Samira": {
+            "traits": [
+                "Street Demon",
+                "A.M.P"
+            ],
+            "champion_tier": 5
+        },
+        "Urgot": {
+            "traits": [
+                "BoomBot",
+                "Executioner"
+            ],
+            "champion_tier": 5
+        },
+        "Viego": {
+            "traits": [
+                "Golden Ox",
+                "Techie"
+            ],
+            "champion_tier": 5
+        }
+    },
+    "trait_thresholds": {
+        "Anima Squad": 3,
+        "BoomBot": 2,
+        "Cyberboss": 2,
+        "Cypher": 3,
+        "Divinicorp": 1,
+        "Exotech": 3,
+        "Golden Ox": 2,
+        "Nitro": 3,
+        "Street Demon": 3,
+        "Syndicate": 3,
+        "A.M.P": 2,
+        "Bastion": 2,
+        "Bruiser": 2,
+        "Dynamo": 2,
+        "Executioner": 2,
+        "Marksman": 2,
+        "Rapidfire": 2,
+        "Slayer": 2,
+        "Strategist": 2,
+        "Techie": 2,
+        "Vanguard": 2
+    }
+}

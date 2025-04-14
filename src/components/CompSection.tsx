@@ -1,6 +1,9 @@
 "use client";
-import { useState } from "react";
-import { ClipboardCopy, Check } from "lucide-react";
+import React, { useState } from "react";
+import { LuCheck, LuCopy } from "react-icons/lu";
+import Image from "next/image";
+import { getChampionTier, getChampionBorderClass, getChampionTraits } from "@/utils/champion";
+import { GiTwoCoins } from "react-icons/gi";
 
 export interface CompData {
     selected_champions: string[];
@@ -10,9 +13,10 @@ export interface CompData {
 
 export interface CompSectionProps {
     compData: CompData;
+    hideTraits?: boolean;
 }
 
-export default function CompSection({ compData }: CompSectionProps) {
+export default function CompSection({ compData, hideTraits }: CompSectionProps) {
     const [copied, setCopied] = useState(false);
 
     const copyToClipboard = () => {
@@ -22,50 +26,83 @@ export default function CompSection({ compData }: CompSectionProps) {
         setTimeout(() => setCopied(false), 2000);
     };
 
-    return (
-        <div className="bg-zinc-900 border border-zinc-800 shadow-lg my-6 rounded">
-            {/* Header */}
-            <div className="flex justify-between items-center border-b border-zinc-800 pb-2 px-4">
-                <h2 className="text-xl text-white">Comp Details</h2>
-                <button
-                    onClick={copyToClipboard}
-                    className="p-2 border rounded border-zinc-700 bg-zinc-800 hover:bg-zinc-700"
-                >
-                    {copied ? (
-                        <Check className="w-4 h-4 text-emerald-400" />
-                    ) : (
-                        <ClipboardCopy className="w-4 h-4 text-zinc-200" />
-                    )}
-                    <span className="sr-only">Copy comp</span>
-                </button>
-            </div>
+    // Sort champions: first by tier then alphabetically.
+    const sortedChampions = compData.selected_champions.slice().sort((a: string, b: string) => {
+        const tierA = getChampionTier(a);
+        const tierB = getChampionTier(b);
+        if (tierA !== tierB) return tierA - tierB;
+        return a.localeCompare(b);
+    });
 
-            {/* Content: Only Activated Traits and Champions */}
-            <div className="px-4 py-4 grid grid-cols-1 gap-6">
-                <div>
-                    <h3 className="text-sm font-medium text-zinc-400 mb-2">Activated Traits</h3>
-                    <div className="flex flex-wrap gap-2">
-                        {compData.activated_traits.map((trait, index) => (
-                            <span
-                                key={index}
-                                className="bg-zinc-800 hover:bg-zinc-700 text-zinc-200 rounded px-2 py-1 text-sm"
-                            >
-                {trait}
-              </span>
-                        ))}
-                    </div>
+    return (
+        <div className="bg-zinc-900 border border-zinc-800 shadow-xl rounded p-4 gap-4 flex flex-col">
+            <div className="flex justify-between items-center border-b border-zinc-800 pb-2">
+                <div className="flex items-center gap-4">
+                    <h2 className="text-xl text-white font-bold">Comp Details</h2>
                 </div>
+                <div className="flex gap-2">
+                    {typeof compData.total_cost === "number" && (
+                        <div className="flex items-center gap-1">
+                            <span className="font-semibold">{compData.total_cost}</span>
+                            <GiTwoCoins className="size-5 text-yellow-400"/>
+                        </div>
+                    )}
+                    <button
+                        onClick={copyToClipboard}
+                        className="p-2 bg-zinc-800 hover:bg-zinc-700 text-white rounded cursor-pointer"
+                    >
+                        {copied ? (
+                            <LuCheck className="size-5 text-emerald-400"/>
+                        ) : (
+                            <LuCopy className="size-5 text-white"/>
+                        )}
+                        <span className="sr-only">Copy comp</span>
+                    </button>
+                </div>
+            </div>
+            <div className="flex flex-col gap-4">
+                {!hideTraits && (
+                    <div className="flex flex-col gap-1">
+                        <div className="flex flex-wrap gap-2">
+                            {compData.activated_traits.map((trait: string, index: number) => {
+                                const traitIcon = `/trait-icons/Trait_Icon_14_${trait.replace(/ /g, "")}.TFT_Set14.png`;
+                                return (
+                                    <span key={index} className="flex items-center bg-zinc-800 hover:bg-zinc-700 text-zinc-200 rounded px-2 py-1 text-sm">
+                    <Image src={traitIcon} alt={trait} width={20} height={20} className="mr-1" />
+                                        {trait}
+                  </span>
+                                );
+                            })}
+                        </div>
+                    </div>
+                )}
                 <div>
-                    <h3 className="text-sm font-medium text-zinc-400 mb-2">Champions</h3>
                     <div className="flex flex-wrap gap-2">
-                        {compData.selected_champions.map((champion, index) => (
-                            <span
-                                key={index}
-                                className="border border-zinc-700 text-zinc-200 rounded px-2 py-1 text-sm"
-                            >
-                {champion}
-              </span>
-                        ))}
+                        {sortedChampions.map((champion: string, index: number) => {
+                            const championFile = champion.replace(/[\s.'-]/g, "").toLowerCase();
+                            const borderClass = getChampionBorderClass(champion);
+                            return (
+                                <div key={index} className="flex flex-col items-center group relative gap-1">
+                                    <div
+                                        className={`relative size-16 border-2 ${borderClass} rounded overflow-hidden`}>
+                                        <Image
+                                            src={`/champions/${championFile}.png`}
+                                            alt={champion}
+                                            fill
+                                            sizes="64px"
+                                            className="object-contain"
+                                            draggable={false}
+                                        />
+                                    </div>
+                                    <span className="text-xs font-medium text-zinc-200">{champion}</span>
+                                    <div
+                                        className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-zinc-800 bg-opacity-90 text-white text-xs rounded text-center whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-10">
+                                        <p className="font-bold">{champion}</p>
+                                        <p className="mt-1">{getChampionTraits(champion).join(", ") || ""}</p>
+                                    </div>
+                                </div>
+                            );
+                        })}
                     </div>
                 </div>
             </div>

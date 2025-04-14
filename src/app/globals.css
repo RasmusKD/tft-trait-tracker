@@ -5,12 +5,18 @@
   --foreground: #ededed;
 }
 
-/* Optionally, if you still want to support light mode, you can invert the media query */
 @media (prefers-color-scheme: light) {
   :root {
     --background: #ffffff;
     --foreground: #171717;
   }
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
 }
 
 body {

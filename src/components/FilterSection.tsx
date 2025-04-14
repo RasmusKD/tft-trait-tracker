@@ -1,7 +1,8 @@
 "use client";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
-import { Minus, Plus, HelpCircle } from "lucide-react";
+import { LuMinus, LuPlus, LuRefreshCw, LuCircleHelp, LuEye, LuEyeOff } from "react-icons/lu";
+import Modal from "../components/Modal";
 
 export interface FilterSectionProps {
     filters: Record<string, number>;
@@ -10,13 +11,16 @@ export interface FilterSectionProps {
             | Record<string, number>
             | ((prev: Record<string, number>) => Record<string, number>)
     ) => void;
+    hideTraits: boolean;
+    setHideTraits: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export default function FilterSection({
                                           filters,
                                           setFiltersAction,
+                                          hideTraits,
+                                          setHideTraits,
                                       }: FilterSectionProps) {
-    // Eligible bonus traits: all traits from your data excluding "Cyberboss", "Cypher", "Nitro", and "A.M.P".
     const eligibleBonusTraits = [
         "Anima Squad",
         "BoomBot",
@@ -37,11 +41,10 @@ export default function FilterSection({
         "Vanguard",
     ];
 
-    // Maximum bonus allowed per trait (Divinicorp is capped at 1, the rest at 2)
     const maxBonusMap: Record<string, number> = {
         "Anima Squad": 2,
         "BoomBot": 2,
-        "Divinicorp": 1, // capped at 1
+        "Divinicorp": 1,
         "Exotech": 2,
         "Golden Ox": 2,
         "Street Demon": 2,
@@ -58,20 +61,23 @@ export default function FilterSection({
         "Vanguard": 2,
     };
 
-    // Initialize filters on first render if not already set
+    const totalBonus = Object.values(filters).reduce((acc, val) => acc + val, 0);
+
     useEffect(() => {
-        const newFilters: Record<string, number> = {};
-        eligibleBonusTraits.forEach((trait) => {
-            newFilters[trait] = filters[trait] ?? 0;
-        });
-        setFiltersAction(newFilters);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
+        // Kun init hvis filters er tom
+        if (Object.keys(filters).length === 0) {
+            const newFilters: Record<string, number> = {};
+            eligibleBonusTraits.forEach((trait) => {
+                newFilters[trait] = 0;
+            });
+            setFiltersAction(newFilters);
+        }
     }, []);
+
 
     const updateFilter = (trait: string, delta: number) => {
         setFiltersAction((prev: Record<string, number>) => {
             const current = prev[trait] || 0;
-            // Ensure new value does not go below 0 or above the maximum allowed.
             const newValue = Math.min(Math.max(current + delta, 0), maxBonusMap[trait]);
             return { ...prev, [trait]: newValue };
         });
@@ -85,68 +91,126 @@ export default function FilterSection({
         setFiltersAction(newFilters);
     };
 
+    const [filterHelpOpen, setFilterHelpOpen] = useState(false);
+
     return (
-        <div className="bg-zinc-900 border border-zinc-800 shadow-lg rounded p-4 mb-6">
-            <div className="mb-4">
-                <h2 className="text-xl text-white">Emblem Filters</h2>
-                <p className="text-zinc-400 text-sm">
-                    Adjust the emblem bonus counts for each trait to filter precomputed comps.
-                    (Maximum total bonus allowed is 4.)
-                </p>
+        <div className="bg-zinc-900 border border-zinc-800 shadow-lg rounded p-4">
+            {/* Top area: Title and inline icon buttons */}
+            <div className="flex items-start justify-between gap-4">
+                <div>
+                    <h2 className="text-xl text-white font-bold">Emblem Filters</h2>
+                    <p className="text-zinc-400 text-sm">
+                        Add your emblems to see comps that use the fewest units and lowest cost.
+                    </p>
+                </div>
+                <div className="flex gap-2">
+                    {/* Toggle Comp Traits Button */}
+                    <div className="relative group">
+                        <button
+                            onClick={() => setHideTraits(!hideTraits)}
+                            className={`p-2 rounded cursor-pointer ${hideTraits ? "bg-red-500 hover:bg-red-600" : "bg-emerald-500 hover:bg-emerald-600"} text-white`}
+                        >
+                            {hideTraits ? <LuEyeOff className="w-5 h-5"/> : <LuEye className="w-5 h-5"/>}
+                        </button>
+                        <span
+                            className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-zinc-800 bg-opacity-70 text-white text-xs rounded whitespace-nowrap text-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
+              Toggle Comp Traits
+              <div
+                  className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-6 border-l-transparent border-r-6 border-r-transparent border-t-6 border-t-zinc-800"></div>
+            </span>
+                    </div>
+                    {/* Reset Filters Button */}
+                    <div className="relative group">
+                        <button
+                            onClick={resetFilters}
+                            className="p-2 bg-zinc-800 hover:bg-zinc-700 text-white rounded cursor-pointer"
+                        >
+                            <LuRefreshCw className="w-5 h-5"/>
+                        </button>
+                        <span
+                            className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-zinc-800 bg-opacity-70 text-white text-xs rounded whitespace-nowrap text-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
+              Reset Filters
+              <div
+                  className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-6 border-l-transparent border-r-6 border-r-transparent border-t-6 border-t-zinc-800"></div>
+            </span>
+                    </div>
+                    {/* Filter Help Button */}
+                    <div className="relative group">
+                        <button
+                            onClick={() => setFilterHelpOpen(true)}
+                            className="p-2 bg-zinc-800 hover:bg-zinc-700 text-white rounded cursor-pointer"
+                        >
+                            <LuCircleHelp className="w-5 h-5"/>
+                        </button>
+                        <span
+                            className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-zinc-800 bg-opacity-70 text-white text-xs rounded whitespace-nowrap text-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
+              Filter Help
+              <div
+                  className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-6 border-l-transparent border-r-6 border-r-transparent border-t-6 border-t-zinc-800"></div>
+            </span>
+                    </div>
+                </div>
             </div>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {eligibleBonusTraits.map((trait) => {
-                    // Convert trait name to lowercase without spaces for the filename.
-                    // Example: "Anima Squad" -> "tft14_emblem_animasquad.tft_set14.png"
+
+            <Modal title="Filtering Help" isOpen={filterHelpOpen} onClose={() => setFilterHelpOpen(false)}>
+                <p>
+                    Use these emblem filters to select which emblems you have. The tool will then show you team
+                    compositions
+                    that require the fewest units and the lowest cost.
+                </p>
+                <p className="mt-2">Each configuration shows up to 50 comps.</p>
+            </Modal>
+
+            {/* Emblem grid: separate the image from the +/– controls */}
+            <div className="mt-4 flex flex-wrap gap-2">
+                {eligibleBonusTraits.map((trait: string) => {
                     const imageFile = `tft14_emblem_${trait.replace(/ /g, "").toLowerCase()}.tft_set14.png`;
+                    const count = filters[trait] || 0;
                     return (
                         <div key={trait} className="flex flex-col items-center">
-                            <div className="relative w-12 h-12 mb-2">
-                                <Image
-                                    src={`/emblems/${imageFile}`}
-                                    alt={trait}
-                                    fill
-                                    className="object-contain"
-                                    draggable={false}
-                                />
+                            <div className="relative w-12 h-12 mb-1">
+                                {/* Only the image gets the hover popover */}
+                                <div className="group relative">
+                                    <Image
+                                        src={`/emblems/${imageFile}`}
+                                        alt={trait}
+                                        width={48}
+                                        height={48}
+                                        className="object-contain"
+                                        draggable={false}
+                                    />
+                                    <span
+                                        className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-zinc-800 bg-opacity-70 text-white text-xs rounded whitespace-nowrap text-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
+              {trait}
+                                        <div
+                                            className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-6 border-l-transparent border-r-6 border-r-transparent border-t-6 border-t-zinc-800"></div>
+            </span>
+                                </div>
                             </div>
-                            <div className="flex items-center space-x-2">
+                            {/* Controls: Fixed-width number container so they don't change width */}
+                            <div className="flex items-center gap-[1.5px]">
                                 <button
                                     onClick={() => updateFilter(trait, -1)}
-                                    className="p-1 bg-zinc-800 border border-zinc-700 rounded hover:bg-zinc-700"
+                                    disabled={count === 0}
+                                    className="p-1 bg-zinc-800 border border-zinc-700 rounded hover:bg-zinc-700 cursor-pointer disabled:opacity-50 disabled:cursor-default disabled:hover:bg-zinc-800"
                                 >
-                                    <Minus className="w-4 h-4 text-zinc-200" />
+                                    <LuMinus className="w-4 h-4 text-zinc-200"/>
                                 </button>
-                                <span className="text-white">{filters[trait] || 0}</span>
+                                <span
+                                    className={count > 0 ? "w-6 text-center text-emerald-400" : "w-6 text-center text-white"}>
+    {count}
+  </span>
                                 <button
                                     onClick={() => updateFilter(trait, 1)}
-                                    className="p-1 bg-zinc-800 border border-zinc-700 rounded hover:bg-zinc-700"
+                                    disabled={count === maxBonusMap[trait] || totalBonus >= 4}
+                                    className="p-1 bg-zinc-800 border border-zinc-700 rounded hover:bg-zinc-700 cursor-pointer disabled:opacity-50 disabled:cursor-default disabled:hover:bg-zinc-800"
                                 >
-                                    <Plus className="w-4 h-4 text-zinc-200" />
+                                    <LuPlus className="w-4 h-4 text-zinc-200"/>
                                 </button>
                             </div>
                         </div>
                     );
                 })}
-            </div>
-            <div className="flex justify-end mt-4 space-x-2">
-                <button
-                    onClick={resetFilters}
-                    className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded"
-                >
-                    Reset
-                </button>
-                <button
-                    onClick={() =>
-                        alert(
-                            "Help: Adjust the emblem bonus counts to filter the comps based on available trait bonuses. Maximum total bonus across all traits is 4."
-                        )
-                    }
-                    className="bg-zinc-800 hover:bg-zinc-700 text-white px-4 py-2 rounded"
-                >
-                    <HelpCircle className="w-5 h-5 inline" />
-                    <span className="ml-2">Help</span>
-                </button>
             </div>
         </div>
     );
