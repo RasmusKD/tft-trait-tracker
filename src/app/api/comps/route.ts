@@ -4,13 +4,10 @@ import { promises as fs } from "fs";
 
 interface CompData {
     selected_champions: string[];
-    activated_traits: string[];
-    total_cost?: number;
 }
 
 interface PrecomputedComps {
     [key: string]: {
-        min_champion_count: number;
         solutions: CompData[];
     };
 }
@@ -30,8 +27,7 @@ export async function GET(request: Request) {
             cachedData = JSON.parse(fileContents) as PrecomputedComps;
             console.log("Loaded cachedData keys:", Object.keys(cachedData));
         }
-        const result =
-            cachedData[filterKey] || cachedData["none"] || { min_champion_count: 0, solutions: [] };
+        const result = cachedData[filterKey] || cachedData["none"] || { solutions: [] };
         console.log("Returning API result with keys:", Object.keys(result));
         // Wrap the result in an object keyed by filterKey.
         return NextResponse.json({ [filterKey]: result });

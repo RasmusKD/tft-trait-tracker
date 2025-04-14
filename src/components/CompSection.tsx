@@ -1,26 +1,26 @@
 "use client";
-import React, { useState } from "react";
-import { LuCheck, LuCopy } from "react-icons/lu";
+import { useState } from "react";
 import Image from "next/image";
-import { getChampionTier, getChampionBorderClass, getChampionTraits } from "@/utils/champion";
+import { LuCheck, LuCopy } from "react-icons/lu";
 import { GiTwoCoins } from "react-icons/gi";
+import { getChampionTier, getChampionBorderClass, getChampionTraits } from "@/utils/champion";
+import { getActivatedTraits } from "@/utils/traits";
 
 export interface CompData {
     selected_champions: string[];
-    activated_traits: string[];
-    total_cost?: number;
 }
 
 export interface CompSectionProps {
     compData: CompData;
     hideTraits?: boolean;
+    filters: Record<string, number>;
 }
 
-export default function CompSection({ compData, hideTraits }: CompSectionProps) {
+export default function CompSection({ compData, hideTraits, filters }: CompSectionProps) {
     const [copied, setCopied] = useState(false);
 
     const copyToClipboard = () => {
-        const text = `Traits: ${compData.activated_traits.join(", ")}\nChampions: ${compData.selected_champions.join(", ")}`;
+        const text = `Champions: ${compData.selected_champions.join(", ")}`;
         navigator.clipboard.writeText(text);
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
@@ -34,6 +34,12 @@ export default function CompSection({ compData, hideTraits }: CompSectionProps) 
         return a.localeCompare(b);
     });
 
+    // Compute activated traits on the fly using the helper.
+    const activatedTraits = getActivatedTraits(compData.selected_champions, filters);
+
+    // Compute total cost on the fly.
+    const computedTotal = sortedChampions.reduce((sum, champ) => sum + getChampionTier(champ), 0);
+
     return (
         <div className="bg-zinc-900 border border-zinc-800 shadow-xl rounded p-4 gap-4 flex flex-col">
             <div className="flex justify-between items-center border-b border-zinc-800 pb-2">
@@ -41,12 +47,10 @@ export default function CompSection({ compData, hideTraits }: CompSectionProps) 
                     <h2 className="text-xl text-white font-bold">Comp Details</h2>
                 </div>
                 <div className="flex gap-2">
-                    {typeof compData.total_cost === "number" && (
-                        <div className="flex items-center gap-1">
-                            <span className="font-semibold">{compData.total_cost}</span>
-                            <GiTwoCoins className="size-5 text-yellow-400"/>
-                        </div>
-                    )}
+                    <div className="flex items-center gap-1">
+                        <span className="font-semibold">{computedTotal}</span>
+                        <GiTwoCoins className="size-5 text-yellow-400"/>
+                    </div>
                     <button
                         onClick={copyToClipboard}
                         className="p-2 bg-zinc-800 hover:bg-zinc-700 text-white rounded cursor-pointer"
@@ -64,7 +68,7 @@ export default function CompSection({ compData, hideTraits }: CompSectionProps) 
                 {!hideTraits && (
                     <div className="flex flex-col gap-1">
                         <div className="flex flex-wrap gap-2">
-                            {compData.activated_traits.map((trait: string, index: number) => {
+                            {activatedTraits.map((trait: string, index: number) => {
                                 const traitIcon = `/trait-icons/Trait_Icon_14_${trait.replace(/ /g, "")}.TFT_Set14.png`;
                                 return (
                                     <span key={index} className="flex items-center bg-zinc-800 hover:bg-zinc-700 text-zinc-200 rounded px-2 py-1 text-sm">

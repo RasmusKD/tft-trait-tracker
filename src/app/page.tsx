@@ -9,14 +9,11 @@ import Footer from "../components/Footer";
 // Define a type for a single comp solution.
 interface CompData {
   selected_champions: string[];
-  activated_traits: string[];
-  total_cost?: number;
 }
 
 // Define a type for the precomputed comps object.
 interface PrecomputedComps {
   [key: string]: {
-    min_champion_count: number;
     solutions: CompData[];
   };
 }
@@ -40,6 +37,8 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [hideTraits, setHideTraits] = useState<boolean>(false);
   const [championFilters, setChampionFilters] = useState<Record<string, boolean>>({});
+
+  const lookupKey = useMemo(() => bonusDictToKey(filters), [filters]);
 
   // Load stored values from localStorage on mount.
   useEffect(() => {
@@ -68,10 +67,6 @@ export default function Home() {
       localStorage.setItem("championFilters", JSON.stringify(championFilters));
     }
   }, [championFilters]);
-
-
-  // Compute the lookup key.
-  const lookupKey = useMemo(() => bonusDictToKey(filters), [filters]);
 
   // Fetch comps whenever lookupKey changes.
   useEffect(() => {
@@ -115,7 +110,7 @@ export default function Home() {
 
   return (
       <div className="min-h-screen flex flex-col bg-zinc-950 font-[family-name:var(--font-geist-sans)]">
-        <Header />
+        <Header/>
         <main className="flex-grow container mx-auto px-3 py-8">
           <FilterSection
               filters={filters}
@@ -133,7 +128,7 @@ export default function Home() {
                   <div className="flex flex-col gap-6">
                     {filteredSolutions.length > 0 ? (
                         filteredSolutions.map((solution, idx) => (
-                            <CompSection key={idx} compData={solution} hideTraits={hideTraits} />
+                            <CompSection key={idx} compData={solution} hideTraits={hideTraits} filters={filters} />
                         ))
                     ) : (
                         <div className="text-center py-12 bg-zinc-900 rounded-lg border border-zinc-800">
@@ -144,14 +139,11 @@ export default function Home() {
               )}
             </div>
             <div className="w-md">
-              <ChampionFilterSection
-                  championFilters={championFilters}
-                  setChampionFilters={setChampionFilters}
-              />
+              <ChampionFilterSection championFilters={championFilters} setChampionFilters={setChampionFilters}/>
             </div>
           </div>
         </main>
-        <Footer />
+        <Footer/>
       </div>
   );
 }

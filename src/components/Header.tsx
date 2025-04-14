@@ -10,7 +10,7 @@ export default function Header() {
     return (
         <>
             <header className="bg-zinc-900 border-b border-zinc-800 shadow-md">
-                <div className="container mx-auto px-6 py-4 flex items-center justify-between">
+                <div className="container mx-auto px-6 py-3 flex items-center justify-between">
                     <div className="flex items-center gap-3">
                         <div className="relative w-16 h-16">
                             <Image
@@ -48,7 +48,7 @@ export default function Header() {
                 </p>
                 <p className="mt-2">
                     This tool shows you the <strong>lowest-cost comps</strong> that meet the requirement, using real
-                    precomputed data for speed. You can filter by emblems or bonuses you already have, and the results
+                    precomputed data for speed. You can filter by emblems and champions you already have, and the results
                     update instantly.
                 </p>
                 <p className="mt-2">

@@ -121,7 +121,7 @@ export default function ChampionFilterSection({ championFilters, setChampionFilt
                                         checked={allEnabled}
                                         onChange={() => toggleTier(tier)}
                                     />
-                                    <div className="w-10 h-4 bg-zinc-700 rounded-full peer focus:outline-none peer-focus:ring-2 peer-focus:ring-blue-500 peer-checked:bg-green-500"></div>
+                                    <div className="w-10 h-4 bg-zinc-700 rounded-full peer focus:outline-none peer-focus:ring-2 peer-focus:ring-blue-500 peer-checked:bg-emerald-400"></div>
                                     <div className="absolute left-1 top-0.5 bg-white size-3 rounded-full transition-all peer-checked:translate-x-5"></div>
                                 </label>
                             </div>
