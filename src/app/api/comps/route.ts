@@ -1,38 +1,21 @@
 import { NextResponse } from "next/server";
-import path from "path";
-import { promises as fs } from "fs";
-
-interface CompData {
-    selected_champions: string[];
-}
-
-interface PrecomputedComps {
-    [key: string]: {
-        solutions: CompData[];
-    };
-}
-
-// Global cache variable for precomputed data.
-let cachedData: PrecomputedComps | null = null;
+import clientPromise from "@/lib/mongodb";
 
 export async function GET(request: Request) {
-    try {
-        const { searchParams } = new URL(request.url);
-        const filterKey = searchParams.get("filterKey") || "none";
-        console.log("API Lookup Key:", filterKey);
+    const { searchParams } = new URL(request.url);
+    const filterKey = searchParams.get("filterKey") || "none";
 
-        if (!cachedData) {
-            const filePath = path.join(process.cwd(), "data", "precomputed_comps.json");
-            const fileContents = await fs.readFile(filePath, "utf8");
-            cachedData = JSON.parse(fileContents) as PrecomputedComps;
-            console.log("Loaded cachedData keys:", Object.keys(cachedData));
-        }
-        const result = cachedData[filterKey] || cachedData["none"] || { solutions: [] };
-        console.log("Returning API result with keys:", Object.keys(result));
-        // Wrap the result in an object keyed by filterKey.
+    try {
+        const client = await clientPromise;
+        const db = client.db("TFT");
+        const collection = db.collection("SET14");
+
+        const data = await collection.findOne({ filterKey });
+        const result = data || (await collection.findOne({ filterKey: "none" })) || { solutions: [] };
+
         return NextResponse.json({ [filterKey]: result });
     } catch (error) {
-        console.error("Error in API lookup:", error);
+        console.error("Error in API route:", error);
         return NextResponse.json({ error: "Failed to load comps data." }, { status: 500 });
     }
 }

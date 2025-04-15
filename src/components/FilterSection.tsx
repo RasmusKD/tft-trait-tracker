@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import {useCallback, useEffect, useMemo, useState} from "react";
 import Image from "next/image";
 import { LuMinus, LuPlus, LuRefreshCw, LuCircleHelp, LuEye, LuEyeOff } from "react-icons/lu";
 import Modal from "../components/Modal";
@@ -21,7 +21,7 @@ export default function FilterSection({
                                           hideTraits,
                                           setHideTraits,
                                       }: FilterSectionProps) {
-    const eligibleBonusTraits = [
+    const eligibleBonusTraits = useMemo(() => [
         "Anima Squad",
         "BoomBot",
         "Divinicorp",
@@ -39,7 +39,7 @@ export default function FilterSection({
         "Strategist",
         "Techie",
         "Vanguard",
-    ];
+    ], []);
 
     const maxBonusMap: Record<string, number> = {
         "Anima Squad": 2,
@@ -64,7 +64,6 @@ export default function FilterSection({
     const totalBonus = Object.values(filters).reduce((acc, val) => acc + val, 0);
 
     useEffect(() => {
-        // Kun init hvis filters er tom
         if (Object.keys(filters).length === 0) {
             const newFilters: Record<string, number> = {};
             eligibleBonusTraits.forEach((trait) => {
@@ -72,16 +71,16 @@ export default function FilterSection({
             });
             setFiltersAction(newFilters);
         }
-    }, []);
+    }, [eligibleBonusTraits, filters, setFiltersAction]);
 
 
-    const updateFilter = (trait: string, delta: number) => {
-        setFiltersAction((prev: Record<string, number>) => {
+    const updateFilter = useCallback((trait: string, delta: number) => {
+        setFiltersAction((prev) => {
             const current = prev[trait] || 0;
             const newValue = Math.min(Math.max(current + delta, 0), maxBonusMap[trait]);
             return { ...prev, [trait]: newValue };
         });
-    };
+    }, [setFiltersAction, maxBonusMap]);
 
     const resetFilters = () => {
         const newFilters: Record<string, number> = {};
@@ -100,7 +99,7 @@ export default function FilterSection({
                 <div>
                     <h2 className="text-xl text-white font-bold">Emblem Filters</h2>
                     <p className="text-zinc-400 text-sm">
-                        Add your emblems to see comps that use the fewest units and lowest cost.
+                        Add your emblems to see comps that use the fewest units and lowest cost. ( up to 4 ).
                     </p>
                 </div>
                 <div className="flex gap-2">
@@ -154,7 +153,7 @@ export default function FilterSection({
 
             <Modal title="Filtering Help" isOpen={filterHelpOpen} onClose={() => setFilterHelpOpen(false)}>
                 <p>
-                    Use these emblem filters to select which emblems you have. The tool will then show you team
+                    Use the emblem filters to select which emblems you have. The tool will then show you team
                     compositions
                     that require the fewest units and the lowest cost.
                 </p>

@@ -16,16 +16,20 @@ const traitsData = tftTraits as unknown as TFTTraits;
 
 /**
  * getActivatedTraits
- * Computes the activated traits from selected champions, taking into account any bonus values from the filter.
+ * Computes the activated traits from selected champions, taking into account both
+ * the champions’ inherent traits and bonus values from emblem filters.
  *
  * @param selectedChampions - An array of champion names in the composition.
- * @param filters - An object mapping trait names to bonus counts from the emblem filters.
+ * @param filters - An object mapping trait names to bonus counts from emblem filters.
  * @returns A sorted array of trait names that are activated.
  */
-export function getActivatedTraits(selectedChampions: string[], filters: Record<string, number>): string[] {
+export function getActivatedTraits(
+    selectedChampions: string[],
+    filters: Record<string, number>
+): string[] {
     const traitCount: Record<string, number> = {};
 
-    // Count champion traits.
+    // Count champion-provided traits.
     for (const champion of selectedChampions) {
         const championData = traitsData.units[champion];
         if (championData) {
@@ -35,13 +39,19 @@ export function getActivatedTraits(selectedChampions: string[], filters: Record<
         }
     }
 
+    // Create a set that includes both champion-provided traits and traits from filters.
+    const traitsSet = new Set<string>([
+        ...Object.keys(traitCount),
+        ...Object.keys(filters)
+    ]);
+
     const activated: string[] = [];
-    // For every trait that appears in the selected champions, add the bonus from filters and check against threshold.
-    for (const trait in traitCount) {
+    for (const trait of traitsSet) {
+        const championTotal = traitCount[trait] || 0;
         const bonus = filters[trait] || 0;
-        const total = traitCount[trait] + bonus;
+        const total = championTotal + bonus;
         const threshold = traitsData.trait_thresholds[trait];
-        if (total >= threshold) {
+        if (threshold && total >= threshold) {
             activated.push(trait);
         }
     }

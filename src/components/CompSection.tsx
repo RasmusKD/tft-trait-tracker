@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import {useMemo, useState} from "react";
 import Image from "next/image";
 import { LuCheck, LuCopy } from "react-icons/lu";
 import { GiTwoCoins } from "react-icons/gi";
@@ -27,18 +27,25 @@ export default function CompSection({ compData, hideTraits, filters }: CompSecti
     };
 
     // Sort champions: first by tier then alphabetically.
-    const sortedChampions = compData.selected_champions.slice().sort((a: string, b: string) => {
-        const tierA = getChampionTier(a);
-        const tierB = getChampionTier(b);
-        if (tierA !== tierB) return tierA - tierB;
-        return a.localeCompare(b);
-    });
+    const sortedChampions = useMemo(() => {
+        return compData.selected_champions.slice().sort((a, b) => {
+            const tierA = getChampionTier(a);
+            const tierB = getChampionTier(b);
+            if (tierA !== tierB) return tierA - tierB;
+            return a.localeCompare(b);
+        });
+    }, [compData.selected_champions]);
+
 
     // Compute activated traits on the fly using the helper.
-    const activatedTraits = getActivatedTraits(compData.selected_champions, filters);
+    const activatedTraits = useMemo(() => {
+        return getActivatedTraits(compData.selected_champions, filters);
+    }, [compData.selected_champions, filters]);
 
     // Compute total cost on the fly.
-    const computedTotal = sortedChampions.reduce((sum, champ) => sum + getChampionTier(champ), 0);
+    const computedTotal = useMemo(() => {
+        return sortedChampions.reduce((sum, champ) => sum + getChampionTier(champ), 0);
+    }, [sortedChampions]);
 
     return (
         <div className="bg-zinc-900 border border-zinc-800 shadow-xl rounded p-4 gap-4 flex flex-col">

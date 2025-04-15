@@ -36,7 +36,7 @@ export default function Home() {
   const [comps, setComps] = useState<PrecomputedComps>({});
   const [loading, setLoading] = useState(true);
   const [hideTraits, setHideTraits] = useState<boolean>(false);
-  const [championFilters, setChampionFilters] = useState<Record<string, boolean>>({});
+  const [championFilters, setChampionFiltersAction] = useState<Record<string, boolean>>({});
 
   const lookupKey = useMemo(() => bonusDictToKey(filters), [filters]);
 
@@ -49,7 +49,7 @@ export default function Home() {
       }
       const storedChampionFilters = localStorage.getItem("championFilters");
       if (storedChampionFilters !== null) {
-        setChampionFilters(JSON.parse(storedChampionFilters));
+        setChampionFiltersAction(JSON.parse(storedChampionFilters));
       }
     }
   }, []);
@@ -70,21 +70,32 @@ export default function Home() {
 
   // Fetch comps whenever lookupKey changes.
   useEffect(() => {
-    async function fetchFilteredComps() {
-      setLoading(true);
-      try {
-        const res = await fetch(`/api/comps?filterKey=${encodeURIComponent(lookupKey)}`);
-        if (!res.ok) throw new Error("Failed to fetch comps");
-        const data = (await res.json()) as PrecomputedComps;
-        setComps(data);
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetchFilteredComps();
+    setLoading(true);
+
+    fetch(`/api/comps?filterKey=${encodeURIComponent(lookupKey)}`)
+        .then(res => {
+          if (!res.ok) {
+            console.error("Failed to fetch comps");
+            return null;
+          }
+          console.time("API Fetch");
+          return res.json();
+        })
+        .then(data => {
+          if (data) {
+            console.timeEnd("API Fetch");
+            setComps(data);
+          }
+        })
+        .catch(error => {
+          console.error("Unexpected fetch error:", error);
+        })
+        .finally(() => {
+          setLoading(false);
+        });
   }, [lookupKey]);
+
+
 
   const totalBonus = Object.values(filters).reduce((acc, val) => acc + val, 0);
   const noFilter = totalBonus === 0;
@@ -97,7 +108,7 @@ export default function Home() {
   );
   // Filter comps based on championFilters.
   const filteredSolutions = allSolutions.filter((solution: CompData) =>
-      solution.selected_champions.every(champ => championFilters[champ] !== false)
+      solution.selected_champions.every(champ => championFilters[champ])
   );
 
   useEffect(() => {
@@ -139,7 +150,7 @@ export default function Home() {
               )}
             </div>
             <div className="w-md">
-              <ChampionFilterSection championFilters={championFilters} setChampionFilters={setChampionFilters}/>
+              <ChampionFilterSection championFilters={championFilters} setChampionFiltersAction={setChampionFiltersAction}/>
             </div>
           </div>
         </main>

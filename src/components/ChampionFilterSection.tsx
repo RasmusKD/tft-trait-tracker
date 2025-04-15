@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect } from "react";
+import React, {useEffect, useMemo} from "react";
 import Image from "next/image";
 import { LuRefreshCw, LuCircleHelp } from "react-icons/lu";
 import { getChampionBorderClass } from "@/utils/champion";
@@ -7,24 +7,26 @@ import tftTraits from "../../data/tft_traits.json";
 import { GiTwoCoins } from "react-icons/gi";
 export interface ChampionFilterProps {
     championFilters: Record<string, boolean>;
-    setChampionFilters: React.Dispatch<React.SetStateAction<Record<string, boolean>>>;
+    setChampionFiltersAction: React.Dispatch<React.SetStateAction<Record<string, boolean>>>;
 }
 
-export default function ChampionFilterSection({ championFilters, setChampionFilters }: ChampionFilterProps) {
+export default function ChampionFilterSection({ championFilters, setChampionFiltersAction }: ChampionFilterProps) {
     const units = tftTraits.units as Record<string, { traits: string[]; champion_tier: number }>;
 
     // Group champions by tier.
-    const tierMap: Record<number, string[]> = {};
-    Object.entries(units).forEach(([name, data]) => {
-        const tier = data.champion_tier;
-        if (!tierMap[tier]) tierMap[tier] = [];
-        tierMap[tier].push(name);
-    });
-    for (const tier in tierMap) {
-        tierMap[tier].sort((a, b) => a.localeCompare(b));
-    }
+    const tierMap = useMemo(() => {
+        const map: Record<number, string[]> = {};
+        Object.entries(units).forEach(([name, data]) => {
+            const tier = data.champion_tier;
+            if (!map[tier]) map[tier] = [];
+            map[tier].push(name);
+        });
+        for (const tier in map) {
+            map[tier].sort((a, b) => a.localeCompare(b));
+        }
+        return map;
+    }, [units]);
 
-    // On mount, if no championFilters exist, default tiers 1–3 enabled; 4–5 disabled.
     useEffect(() => {
         if (Object.keys(championFilters).length === 0) {
             const newFilters: Record<string, boolean> = {};
@@ -34,12 +36,12 @@ export default function ChampionFilterSection({ championFilters, setChampionFilt
                     newFilters[champ] = numericTier <= 3;
                 });
             });
-            setChampionFilters(newFilters);
+            setChampionFiltersAction(newFilters);
         }
-    }, []);
+    }, [championFilters, setChampionFiltersAction, tierMap]);
 
     const toggleChampion = (champion: string) => {
-        setChampionFilters(prev => ({
+        setChampionFiltersAction(prev => ({
             ...prev,
             [champion]: !prev[champion],
         }));
@@ -48,12 +50,12 @@ export default function ChampionFilterSection({ championFilters, setChampionFilt
     // Toggle all champions in a given tier.
     const toggleTier = (tier: number) => {
         const champs = tierMap[tier] || [];
-        const allEnabled = champs.every(champ => championFilters[champ] !== false);
+        const allEnabled = champs.every(champ => championFilters[champ]);
         const newFilters = { ...championFilters };
         champs.forEach(champ => {
             newFilters[champ] = !allEnabled;
         });
-        setChampionFilters(newFilters);
+        setChampionFiltersAction(newFilters);
     };
 
     // Reset champion filters to default (tiers 1–3 enabled; tiers 4–5 disabled).
@@ -65,7 +67,7 @@ export default function ChampionFilterSection({ championFilters, setChampionFilt
                 newFilters[champ] = numericTier <= 3;
             });
         });
-        setChampionFilters(newFilters);
+        setChampionFiltersAction(newFilters);
     };
 
     return (
@@ -105,7 +107,7 @@ export default function ChampionFilterSection({ championFilters, setChampionFilt
             <div className="space-y-1">
                 {[1, 2, 3, 4, 5].map((tier: number) => {
                     const champs = tierMap[tier] || [];
-                    const allEnabled = champs.every(champ => championFilters[champ] !== false);
+                    const allEnabled = champs.every(champ => championFilters[champ]);
                     return (
                         <div key={tier} className="flex flex-col gap-1">
                             <div className="flex items-center justify-between gap-1 mb-1">
