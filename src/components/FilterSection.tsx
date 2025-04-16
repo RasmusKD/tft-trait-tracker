@@ -1,8 +1,55 @@
 "use client";
-import {useCallback, useEffect, useMemo, useState} from "react";
+import { useCallback, useEffect, useState } from "react";
 import Image from "next/image";
-import { LuMinus, LuPlus, LuRefreshCw, LuCircleHelp, LuEye, LuEyeOff } from "react-icons/lu";
+import {
+    LuMinus,
+    LuPlus,
+    LuRefreshCw,
+    LuCircleHelp,
+    LuEye,
+    LuEyeOff,
+} from "react-icons/lu";
 import Modal from "../components/Modal";
+
+const ELIGIBLE_BONUS_TRAITS = [
+    "Anima Squad",
+    "BoomBot",
+    "Divinicorp",
+    "Exotech",
+    "Golden Ox",
+    "Street Demon",
+    "Syndicate",
+    "Bastion",
+    "Bruiser",
+    "Dynamo",
+    "Executioner",
+    "Marksman",
+    "Rapidfire",
+    "Slayer",
+    "Strategist",
+    "Techie",
+    "Vanguard",
+];
+
+const MAX_BONUS_MAP: Record<string, number> = {
+    "Anima Squad": 2,
+    "BoomBot": 2,
+    "Divinicorp": 1,
+    "Exotech": 2,
+    "Golden Ox": 2,
+    "Street Demon": 2,
+    "Syndicate": 2,
+    "Bastion": 2,
+    "Bruiser": 2,
+    "Dynamo": 2,
+    "Executioner": 2,
+    "Marksman": 2,
+    "Rapidfire": 2,
+    "Slayer": 2,
+    "Strategist": 2,
+    "Techie": 2,
+    "Vanguard": 2,
+};
 
 export interface FilterSectionProps {
     filters: Record<string, number>;
@@ -21,70 +68,37 @@ export default function FilterSection({
                                           hideTraits,
                                           setHideTraits,
                                       }: FilterSectionProps) {
-    const eligibleBonusTraits = useMemo(() => [
-        "Anima Squad",
-        "BoomBot",
-        "Divinicorp",
-        "Exotech",
-        "Golden Ox",
-        "Street Demon",
-        "Syndicate",
-        "Bastion",
-        "Bruiser",
-        "Dynamo",
-        "Executioner",
-        "Marksman",
-        "Rapidfire",
-        "Slayer",
-        "Strategist",
-        "Techie",
-        "Vanguard",
-    ], []);
-
-    const maxBonusMap: Record<string, number> = {
-        "Anima Squad": 2,
-        "BoomBot": 2,
-        "Divinicorp": 1,
-        "Exotech": 2,
-        "Golden Ox": 2,
-        "Street Demon": 2,
-        "Syndicate": 2,
-        "Bastion": 2,
-        "Bruiser": 2,
-        "Dynamo": 2,
-        "Executioner": 2,
-        "Marksman": 2,
-        "Rapidfire": 2,
-        "Slayer": 2,
-        "Strategist": 2,
-        "Techie": 2,
-        "Vanguard": 2,
-    };
 
     const totalBonus = Object.values(filters).reduce((acc, val) => acc + val, 0);
 
     useEffect(() => {
         if (Object.keys(filters).length === 0) {
             const newFilters: Record<string, number> = {};
-            eligibleBonusTraits.forEach((trait) => {
+            ELIGIBLE_BONUS_TRAITS.forEach((trait) => {
                 newFilters[trait] = 0;
             });
             setFiltersAction(newFilters);
         }
-    }, [eligibleBonusTraits, filters, setFiltersAction]);
+    }, [filters, setFiltersAction]);
 
-
-    const updateFilter = useCallback((trait: string, delta: number) => {
-        setFiltersAction((prev) => {
-            const current = prev[trait] || 0;
-            const newValue = Math.min(Math.max(current + delta, 0), maxBonusMap[trait]);
-            return { ...prev, [trait]: newValue };
-        });
-    }, [setFiltersAction, maxBonusMap]);
+    const updateFilter = useCallback(
+        (trait: string, delta: number) => {
+            setFiltersAction((prev) => {
+                const current = prev[trait] || 0;
+                // Ensure the value stays within 0 and the max bonus.
+                const newValue = Math.min(
+                    Math.max(current + delta, 0),
+                    MAX_BONUS_MAP[trait]
+                );
+                return { ...prev, [trait]: newValue };
+            });
+        },
+        [setFiltersAction]
+    );
 
     const resetFilters = () => {
         const newFilters: Record<string, number> = {};
-        eligibleBonusTraits.forEach((trait) => {
+        ELIGIBLE_BONUS_TRAITS.forEach((trait) => {
             newFilters[trait] = 0;
         });
         setFiltersAction(newFilters);
@@ -99,7 +113,8 @@ export default function FilterSection({
                 <div>
                     <h2 className="text-xl text-white font-bold">Emblem Filters</h2>
                     <p className="text-zinc-400 text-sm">
-                        Add your emblems to see comps that use the fewest units and lowest cost. ( up to 4 ).
+                        Add your emblems to see comps that use the fewest units and lowest cost.
+                        (up to 4).
                     </p>
                 </div>
                 <div className="flex gap-2">
@@ -107,16 +122,18 @@ export default function FilterSection({
                     <div className="relative group">
                         <button
                             onClick={() => setHideTraits(!hideTraits)}
-                            className={`p-2 rounded cursor-pointer ${hideTraits ? "bg-red-500 hover:bg-red-600" : "bg-emerald-500 hover:bg-emerald-600"} text-white`}
+                            className={`p-2 rounded cursor-pointer ${
+                                hideTraits
+                                    ? "bg-red-500 hover:bg-red-600"
+                                    : "bg-emerald-500 hover:bg-emerald-600"
+                            } text-white`}
                         >
-                            {hideTraits ? <LuEyeOff className="w-5 h-5"/> : <LuEye className="w-5 h-5"/>}
+                            {hideTraits ? <LuEyeOff className="w-5 h-5" /> : <LuEye className="w-5 h-5" />}
                         </button>
-                        <span
-                            className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-zinc-800 bg-opacity-70 text-white text-xs rounded whitespace-nowrap text-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
-                          Toggle Comp Traits
-                          <div
-                              className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-6 border-l-transparent border-r-6 border-r-transparent border-t-6 border-t-zinc-800"></div>
-                        </span>
+                        <span className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-zinc-800 bg-opacity-70 text-white text-xs rounded whitespace-nowrap text-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
+              Toggle Comp Traits
+              <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-6 border-l-transparent border-r-6 border-r-transparent border-t-6 border-t-zinc-800"></div>
+            </span>
                     </div>
                     {/* Reset Filters Button */}
                     <div className="relative group">
@@ -124,13 +141,11 @@ export default function FilterSection({
                             onClick={resetFilters}
                             className="p-2 bg-zinc-800 hover:bg-zinc-700 text-white rounded cursor-pointer"
                         >
-                            <LuRefreshCw className="w-5 h-5"/>
+                            <LuRefreshCw className="w-5 h-5" />
                         </button>
-                        <span
-                            className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-zinc-800 bg-opacity-70 text-white text-xs rounded whitespace-nowrap text-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
+                        <span className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-zinc-800 bg-opacity-70 text-white text-xs rounded whitespace-nowrap text-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
               Reset Filters
-              <div
-                  className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-6 border-l-transparent border-r-6 border-r-transparent border-t-6 border-t-zinc-800"></div>
+              <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-6 border-l-transparent border-r-6 border-r-transparent border-t-6 border-t-zinc-800"></div>
             </span>
                     </div>
                     {/* Filter Help Button */}
@@ -139,30 +154,30 @@ export default function FilterSection({
                             onClick={() => setFilterHelpOpen(true)}
                             className="p-2 bg-zinc-800 hover:bg-zinc-700 text-white rounded cursor-pointer"
                         >
-                            <LuCircleHelp className="w-5 h-5"/>
+                            <LuCircleHelp className="w-5 h-5" />
                         </button>
-                        <span
-                            className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-zinc-800 bg-opacity-70 text-white text-xs rounded whitespace-nowrap text-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
+                        <span className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-zinc-800 bg-opacity-70 text-white text-xs rounded whitespace-nowrap text-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
               Filter Help
-              <div
-                  className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-6 border-l-transparent border-r-6 border-r-transparent border-t-6 border-t-zinc-800"></div>
+              <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-6 border-l-transparent border-r-6 border-r-transparent border-t-6 border-t-zinc-800"></div>
             </span>
                     </div>
                 </div>
             </div>
 
-            <Modal title="Filtering Help" isOpen={filterHelpOpen} onClose={() => setFilterHelpOpen(false)}>
+            <Modal
+                title="Filtering Help"
+                isOpen={filterHelpOpen}
+                onClose={() => setFilterHelpOpen(false)}
+            >
                 <p>
-                    Use the emblem filters to select which emblems you have. The tool will then show you team
-                    compositions
-                    that require the fewest units and the lowest cost.
+                    Use the emblem filters to select which emblems you have. The tool will then show you team compositions that require the fewest units and the lowest cost.
                 </p>
                 <p className="mt-2">Each configuration shows up to 50 comps.</p>
             </Modal>
 
             {/* Emblem grid: separate the image from the +/– controls */}
             <div className="mt-4 flex flex-wrap gap-2">
-                {eligibleBonusTraits.map((trait: string) => {
+                {ELIGIBLE_BONUS_TRAITS.map((trait) => {
                     const imageFile = `tft14_emblem_${trait.replace(/ /g, "").toLowerCase()}.tft_set14.png`;
                     const count = filters[trait] || 0;
                     return (
@@ -178,12 +193,10 @@ export default function FilterSection({
                                         className="object-contain"
                                         draggable={false}
                                     />
-                                    <span
-                                        className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-zinc-800 bg-opacity-70 text-white text-xs rounded whitespace-nowrap text-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
-              {trait}
-                                        <div
-                                            className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-6 border-l-transparent border-r-6 border-r-transparent border-t-6 border-t-zinc-800"></div>
-            </span>
+                                    <span className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-zinc-800 bg-opacity-70 text-white text-xs rounded whitespace-nowrap text-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
+                    {trait}
+                                        <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-6 border-l-transparent border-r-6 border-r-transparent border-t-6 border-t-zinc-800"></div>
+                  </span>
                                 </div>
                             </div>
                             {/* Controls: Fixed-width number container so they don't change width */}
@@ -193,18 +206,17 @@ export default function FilterSection({
                                     disabled={count === 0}
                                     className="p-1 bg-zinc-800 border border-zinc-700 rounded hover:bg-zinc-700 cursor-pointer disabled:opacity-50 disabled:cursor-default disabled:hover:bg-zinc-800"
                                 >
-                                    <LuMinus className="w-4 h-4 text-zinc-200"/>
+                                    <LuMinus className="w-4 h-4 text-zinc-200" />
                                 </button>
-                                <span
-                                    className={count > 0 ? "w-6 text-center text-emerald-400" : "w-6 text-center text-white"}>
-    {count}
-  </span>
+                                <span className={count > 0 ? "w-6 text-center text-emerald-400" : "w-6 text-center text-white"}>
+                  {count}
+                </span>
                                 <button
                                     onClick={() => updateFilter(trait, 1)}
-                                    disabled={count === maxBonusMap[trait] || totalBonus >= 4}
+                                    disabled={count === MAX_BONUS_MAP[trait] || totalBonus >= 4}
                                     className="p-1 bg-zinc-800 border border-zinc-700 rounded hover:bg-zinc-700 cursor-pointer disabled:opacity-50 disabled:cursor-default disabled:hover:bg-zinc-800"
                                 >
-                                    <LuPlus className="w-4 h-4 text-zinc-200"/>
+                                    <LuPlus className="w-4 h-4 text-zinc-200" />
                                 </button>
                             </div>
                         </div>
