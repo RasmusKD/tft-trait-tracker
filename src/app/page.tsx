@@ -54,7 +54,6 @@ export default function Home() {
     }
   }, []);
 
-
   // Persist hideTraits and championFilters changes.
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -75,15 +74,12 @@ export default function Home() {
     fetch(`/api/comps?filterKey=${encodeURIComponent(lookupKey)}`)
         .then(res => {
           if (!res.ok) {
-            console.error("Failed to fetch comps");
             return null;
           }
-          console.time("API Fetch");
           return res.json();
         })
         .then(data => {
           if (data) {
-            console.timeEnd("API Fetch");
             setComps(data);
           }
         })
@@ -94,8 +90,6 @@ export default function Home() {
           setLoading(false);
         });
   }, [lookupKey]);
-
-
 
   const totalBonus = Object.values(filters).reduce((acc, val) => acc + val, 0);
   const noFilter = totalBonus === 0;
@@ -127,7 +121,7 @@ export default function Home() {
               filters={filters}
               setFiltersAction={setFilters}
               hideTraits={hideTraits}
-              setHideTraits={setHideTraits}
+              setHideTraitsAction={setHideTraits}
           />
           <div className="flex flex-col md:flex-row gap-4 mt-4">
             <div className="flex-1">

@@ -1,26 +1,11 @@
-import tftTraits from "../../data/tft_traits.json";
-
-type TFTTraits = {
-    units: {
-        [champion: string]: {
-            traits: string[];
-            champion_tier: number;
-        };
-    };
-    trait_thresholds: {
-        [trait: string]: number;
-    };
-};
-
-const traitsData = tftTraits as unknown as TFTTraits;
+import { championMapping, traitThresholds } from "@/utils/championMapping";
 
 /**
- * getActivatedTraits
- * Computes the activated traits from selected champions, taking into account both
- * the champions’ inherent traits and bonus values from emblem filters.
+ * getActivatedTraits computes the activated traits given a set of selected champions
+ * and any bonus amounts (filters) applied.
  *
- * @param selectedChampions - An array of champion names in the composition.
- * @param filters - An object mapping trait names to bonus counts from emblem filters.
+ * @param selectedChampions - An array of champion names.
+ * @param filters - An object mapping trait names to bonus counts.
  * @returns A sorted array of trait names that are activated.
  */
 export function getActivatedTraits(
@@ -29,9 +14,9 @@ export function getActivatedTraits(
 ): string[] {
     const traitCount: Record<string, number> = {};
 
-    // Count champion-provided traits.
+    // Count champion-provided traits based on championMapping.
     for (const champion of selectedChampions) {
-        const championData = traitsData.units[champion];
+        const championData = championMapping[champion];
         if (championData) {
             championData.traits.forEach((trait) => {
                 traitCount[trait] = (traitCount[trait] || 0) + 1;
@@ -39,10 +24,10 @@ export function getActivatedTraits(
         }
     }
 
-    // Create a set that includes both champion-provided traits and traits from filters.
+    // Include both the traits that come from champions and the ones specified in filters.
     const traitsSet = new Set<string>([
         ...Object.keys(traitCount),
-        ...Object.keys(filters)
+        ...Object.keys(filters),
     ]);
 
     const activated: string[] = [];
@@ -50,7 +35,7 @@ export function getActivatedTraits(
         const championTotal = traitCount[trait] || 0;
         const bonus = filters[trait] || 0;
         const total = championTotal + bonus;
-        const threshold = traitsData.trait_thresholds[trait];
+        const threshold = traitThresholds[trait];
         if (threshold && total >= threshold) {
             activated.push(trait);
         }

@@ -2,25 +2,28 @@
 import React, {useEffect, useMemo} from "react";
 import Image from "next/image";
 import { LuRefreshCw, LuCircleHelp } from "react-icons/lu";
-import { getChampionBorderClass } from "@/utils/champion";
-import tftTraits from "../../data/tft_traits.json";
 import { GiTwoCoins } from "react-icons/gi";
+import { getChampionBorderClass } from "@/utils/champion";
+import { championMapping } from "@/utils/championMapping";
 export interface ChampionFilterProps {
     championFilters: Record<string, boolean>;
     setChampionFiltersAction: React.Dispatch<React.SetStateAction<Record<string, boolean>>>;
 }
 
 export default function ChampionFilterSection({ championFilters, setChampionFiltersAction }: ChampionFilterProps) {
-    const units = tftTraits.units as Record<string, { traits: string[]; champion_tier: number }>;
+    const units = championMapping;
 
     // Group champions by tier.
     const tierMap = useMemo(() => {
         const map: Record<number, string[]> = {};
         Object.entries(units).forEach(([name, data]) => {
-            const tier = data.champion_tier;
-            if (!map[tier]) map[tier] = [];
+            const tier = data.championTier;
+            if (!map[tier]) {
+                map[tier] = [];
+            }
             map[tier].push(name);
         });
+        // Sort each tier alphabetically.
         for (const tier in map) {
             map[tier].sort((a, b) => a.localeCompare(b));
         }

@@ -1,22 +1,8 @@
-import tftTraits from "../../data/tft_traits.json";
-
-// Define interfaces for champion data.
-interface ChampionData {
-    traits: string[];
-    champion_tier: number;
-}
-
-interface TFTTraits {
-    units: Record<string, ChampionData>;
-    trait_thresholds: Record<string, number>;
-}
-
-// Cast the imported JSON.
-const traitsData = tftTraits as unknown as TFTTraits;
+import { championMapping } from "@/utils/championMapping";
 
 export function getChampionTier(championName: string): number {
-    const championData = traitsData.units[championName];
-    return championData ? championData.champion_tier : 1;
+    const championData = championMapping[championName];
+    return championData ? championData.championTier : 1;
 }
 
 export function getChampionBorderClass(championName: string): string {
@@ -38,6 +24,6 @@ export function getChampionBorderClass(championName: string): string {
 }
 
 export function getChampionTraits(championName: string): string[] {
-    const championData = traitsData.units[championName];
+    const championData = championMapping[championName];
     return championData ? championData.traits : [];
 }

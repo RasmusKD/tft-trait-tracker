@@ -5,10 +5,14 @@ import React, { useState } from "react";
 export default function Footer() {
     const [copied, setCopied] = useState(false);
 
-    const copyDiscord = () => {
-        navigator.clipboard.writeText("RasmusKD");
-        setCopied(true);
-        setTimeout(() => setCopied(false), 2000);
+    const copyDiscord = async () => {
+        try {
+            await navigator.clipboard.writeText("RasmusKD");
+            setCopied(true);
+            setTimeout(() => setCopied(false), 2000);
+        } catch (error) {
+            console.error("Failed to copy text:", error);
+        }
     };
 
     return (
@@ -47,7 +51,7 @@ export default function Footer() {
             </div>
 
             <p className="text-xs text-zinc-500 text-center">
-                TraitTracker Beta v0.2
+                TraitTracker Beta v0.4
             </p>
             <p className="text-xs text-zinc-500 text-center">
                 TraitTracker.gg is a fan-made tool and is not affiliated with or endorsed by Riot Games. All Teamfight Tactics assets and trademarks are © Riot Games.

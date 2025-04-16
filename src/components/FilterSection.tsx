@@ -1,5 +1,5 @@
 "use client";
-import { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import Image from "next/image";
 import {
     LuMinus,
@@ -59,14 +59,14 @@ export interface FilterSectionProps {
             | ((prev: Record<string, number>) => Record<string, number>)
     ) => void;
     hideTraits: boolean;
-    setHideTraits: React.Dispatch<React.SetStateAction<boolean>>;
+    setHideTraitsAction: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export default function FilterSection({
                                           filters,
                                           setFiltersAction,
                                           hideTraits,
-                                          setHideTraits,
+                                          setHideTraitsAction,
                                       }: FilterSectionProps) {
 
     const totalBonus = Object.values(filters).reduce((acc, val) => acc + val, 0);
@@ -121,7 +121,7 @@ export default function FilterSection({
                     {/* Toggle Comp Traits Button */}
                     <div className="relative group">
                         <button
-                            onClick={() => setHideTraits(!hideTraits)}
+                            onClick={() => setHideTraitsAction(!hideTraits)}
                             className={`p-2 rounded cursor-pointer ${
                                 hideTraits
                                     ? "bg-red-500 hover:bg-red-600"

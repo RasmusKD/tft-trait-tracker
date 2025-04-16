@@ -5,6 +5,7 @@ import { LuCheck, LuCopy } from "react-icons/lu";
 import { GiTwoCoins } from "react-icons/gi";
 import { getChampionTier, getChampionBorderClass, getChampionTraits } from "@/utils/champion";
 import { getActivatedTraits } from "@/utils/traits";
+import { buildTeamPlannerCode } from "@/utils/teamPlanner";
 
 export interface CompData {
     selected_champions: string[];
@@ -19,16 +20,21 @@ export interface CompSectionProps {
 export default function CompSection({ compData, hideTraits, filters }: CompSectionProps) {
     const [copied, setCopied] = useState(false);
 
-    const copyToClipboard = () => {
-        const text = `Champions: ${compData.selected_champions.join(", ")}`;
-        navigator.clipboard.writeText(text);
-        setCopied(true);
-        setTimeout(() => setCopied(false), 2000);
+    const copyToClipboard = async () => {
+        const code = buildTeamPlannerCode(compData.selected_champions, "TFTSet14");
+        try {
+            await navigator.clipboard.writeText(code);
+            setCopied(true);
+            setTimeout(() => setCopied(false), 2000);
+        } catch (error) {
+            console.error("Failed to copy team planner code:", error);
+        }
     };
+
 
     // Sort champions: first by tier then alphabetically.
     const sortedChampions = useMemo(() => {
-        return compData.selected_champions.slice().sort((a, b) => {
+        return compData.selected_champions.slice().sort((a: string, b: string) => {
             const tierA = getChampionTier(a);
             const tierB = getChampionTier(b);
             if (tierA !== tierB) return tierA - tierB;
@@ -37,7 +43,7 @@ export default function CompSection({ compData, hideTraits, filters }: CompSecti
     }, [compData.selected_champions]);
 
 
-    // Compute activated traits on the fly using the helper.
+    // Compute activated traits on the fly.
     const activatedTraits = useMemo(() => {
         return getActivatedTraits(compData.selected_champions, filters);
     }, [compData.selected_champions, filters]);
@@ -58,17 +64,27 @@ export default function CompSection({ compData, hideTraits, filters }: CompSecti
                         <span className="font-semibold">{computedTotal}</span>
                         <GiTwoCoins className="size-5 text-yellow-400"/>
                     </div>
-                    <button
-                        onClick={copyToClipboard}
-                        className="p-2 bg-zinc-800 hover:bg-zinc-700 text-white rounded cursor-pointer"
-                    >
-                        {copied ? (
-                            <LuCheck className="size-5 text-emerald-400"/>
-                        ) : (
-                            <LuCopy className="size-5 text-white"/>
-                        )}
-                        <span className="sr-only">Copy comp</span>
-                    </button>
+                    <div className="flex gap-2">
+                        <div className="relative group">
+                            <button
+                                onClick={copyToClipboard}
+                                className="p-2 bg-zinc-800 hover:bg-zinc-700 text-white rounded cursor-pointer"
+                            >
+                                {copied ? (
+                                    <LuCheck className="w-4 h-4 text-emerald-400"/>
+                                ) : (
+                                    <LuCopy className="w-4 h-4 text-white"/>
+                                )}
+                                <span className="sr-only">Copy Team Code</span>
+                            </button>
+                            <span
+                                className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-zinc-800 bg-opacity-70 text-white text-xs rounded whitespace-nowrap text-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-10">
+      {copied ? "Team Code Copied!" : "Copy Team Code"}
+                                <div
+                                    className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-6 border-l-transparent border-r-6 border-r-transparent border-t-6 border-t-zinc-800"></div>
+    </span>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div className="flex flex-col gap-4">
@@ -78,8 +94,9 @@ export default function CompSection({ compData, hideTraits, filters }: CompSecti
                             {activatedTraits.map((trait: string, index: number) => {
                                 const traitIcon = `/trait-icons/Trait_Icon_14_${trait.replace(/ /g, "")}.TFT_Set14.png`;
                                 return (
-                                    <span key={index} className="flex items-center bg-zinc-800 hover:bg-zinc-700 text-zinc-200 rounded px-2 py-1 text-sm">
-                    <Image src={traitIcon} alt={trait} width={20} height={20} className="mr-1" />
+                                    <span key={index}
+                                          className="flex items-center bg-zinc-800 hover:bg-zinc-700 text-zinc-200 rounded px-2 py-1 text-sm">
+                    <Image src={traitIcon} alt={trait} width={20} height={20} className="mr-1"/>
                                         {trait}
                   </span>
                                 );
