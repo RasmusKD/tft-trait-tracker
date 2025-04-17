@@ -1,5 +1,5 @@
 "use client";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useState } from "react";
 import Image from "next/image";
 import {
     LuMinus,
@@ -53,11 +53,9 @@ const MAX_BONUS_MAP: Record<string, number> = {
 
 export interface FilterSectionProps {
     filters: Record<string, number>;
-    setFiltersAction: (
-        filters:
-            | Record<string, number>
-            | ((prev: Record<string, number>) => Record<string, number>)
-    ) => void;
+    setFiltersAction: React.Dispatch<
+        React.SetStateAction<Record<string, number>>
+    >;
     hideTraits: boolean;
     setHideTraitsAction: React.Dispatch<React.SetStateAction<boolean>>;
 }
@@ -68,40 +66,31 @@ export default function FilterSection({
                                           hideTraits,
                                           setHideTraitsAction,
                                       }: FilterSectionProps) {
-
     const totalBonus = Object.values(filters).reduce((acc, val) => acc + val, 0);
-
-    useEffect(() => {
-        if (Object.keys(filters).length === 0) {
-            const newFilters: Record<string, number> = {};
-            ELIGIBLE_BONUS_TRAITS.forEach((trait) => {
-                newFilters[trait] = 0;
-            });
-            setFiltersAction(newFilters);
-        }
-    }, [filters, setFiltersAction]);
 
     const updateFilter = useCallback(
         (trait: string, delta: number) => {
             setFiltersAction((prev) => {
-                const current = prev[trait] || 0;
-                // Ensure the value stays within 0 and the max bonus.
+                const current = prev[trait] ?? 0;
                 const newValue = Math.min(
                     Math.max(current + delta, 0),
                     MAX_BONUS_MAP[trait]
                 );
-                return { ...prev, [trait]: newValue };
+                const next = { ...prev };
+                if (newValue > 0) {
+                    next[trait] = newValue;
+                } else {
+                    // remove zeroed traits so our object stays small
+                    delete next[trait];
+                }
+                return next;
             });
         },
         [setFiltersAction]
     );
 
     const resetFilters = () => {
-        const newFilters: Record<string, number> = {};
-        ELIGIBLE_BONUS_TRAITS.forEach((trait) => {
-            newFilters[trait] = 0;
-        });
-        setFiltersAction(newFilters);
+        setFiltersAction({});
     };
 
     const [filterHelpOpen, setFilterHelpOpen] = useState(false);
