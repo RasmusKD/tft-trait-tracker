@@ -1,35 +1,33 @@
-// src/utils/teamPlanner.ts
 import { championMapping } from "@/utils/championMapping";
+import { sortChampionsByTierAndName } from "@/utils/championUtils";
 
-export function buildTeamPlannerCode(selectedChampions: string[], setIdentifier: string): string {
-    // For TFT Set14 the code now starts with "02"
+/**
+ * buildTeamPlannerCode constructs the TFT Set 14 team code,
+ * sorting champions via our shared helper and padding to 10 slots.
+ */
+export function buildTeamPlannerCode(
+    selectedChampions: string[],
+    setIdentifier: string
+): string {
     let code = "02";
     const targetSlots = 10;
 
-    // Sort the selected champions by champion cost (championTier) in ascending order;
-    // if two champions have the same tier, sort alphabetically.
-    const sortedChampions = [...selectedChampions].sort((a, b) => {
-        const tierA = championMapping[a] ? championMapping[a].championTier : 99;
-        const tierB = championMapping[b] ? championMapping[b].championTier : 99;
-        if (tierA !== tierB) return tierA - tierB;
-        return a.localeCompare(b);
-    });
+    // Sort champions by tier then name
+    const sortedChampions = sortChampionsByTierAndName(selectedChampions);
 
-    // Pad the champions array to ensure there are exactly 10 slots.
+    // Pad to exactly 10 slots
     const paddedChampions = [...sortedChampions];
     while (paddedChampions.length < targetSlots) {
         paddedChampions.push("Blank");
     }
 
-    // Build the code by concatenating each champion's three-digit team planner code.
-    paddedChampions.forEach(champion => {
+    // Concatenate each champion's code (or "000" if missing)
+    paddedChampions.forEach((champion) => {
         const championData = championMapping[champion] || null;
-        // If champion not found, use "000"
-        const hex = championData ? championData.teamPlannerCode : "000";
-        code += hex;
+        code += championData ? championData.teamPlannerCode : "000";
     });
 
-    // Append the set identifier (e.g., "TFTSet14") at the end.
+    // Append the set identifier (e.g. "TFTSet14")
     code += setIdentifier;
     return code;
 }

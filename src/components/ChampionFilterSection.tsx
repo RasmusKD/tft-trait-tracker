@@ -3,7 +3,7 @@ import React, {useEffect, useMemo} from "react";
 import Image from "next/image";
 import { LuRefreshCw, LuCircleHelp } from "react-icons/lu";
 import { GiTwoCoins } from "react-icons/gi";
-import { getChampionBorderClass } from "@/utils/champion";
+import { getChampionBorderClass } from "@/utils/championUtils";
 import { championMapping } from "@/utils/championMapping";
 export interface ChampionFilterProps {
     championFilters: Record<string, boolean>;
