@@ -46,8 +46,19 @@ export default function Home() {
 
     const [comps, setComps] = useState<PrecomputedComps>({});
     const [loading, setLoading] = useState(false);
+    const [showChampionFiltersMobile, setShowChampionFiltersMobile] = useState(false);
 
     const lookupKey = useMemo(() => bonusDictToKey(filters), [filters]);
+
+    useEffect(() => {
+        if (typeof window !== "undefined") {
+            const isMobile = window.innerWidth < 1024;
+            if (isMobile) {
+                setHideTraits(true);
+            }
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     useEffect(() => {
         setLoading(true);
@@ -72,7 +83,7 @@ export default function Home() {
     return (
         <div className="min-h-screen flex flex-col bg-zinc-950">
             <Header />
-            <main className="flex-grow container mx-auto px-3 py-8">
+            <main className="flex-grow container mx-auto px-3 py-4">
                 <FilterSection
                     filters={filters}
                     setFiltersAction={setFilters}
@@ -80,11 +91,30 @@ export default function Home() {
                     setHideTraitsAction={setHideTraits}
                 />
 
-                <div className="flex flex-col md:flex-row gap-4 mt-4">
+                <div className="flex flex-col lg:flex-row gap-4 mt-4">
+                    <div className="block lg:hidden ">
+                        <button
+                            onClick={() => setShowChampionFiltersMobile((prev) => !prev)}
+                            className="bg-zinc-800 text-white px-4 py-2 rounded hover:bg-zinc-700 transition w-full"
+                        >
+                            {showChampionFiltersMobile ? "Hide Champion Filters" : "Show Champion Filters"}
+                        </button>
+                        {showChampionFiltersMobile && (
+                            <div className="mt-4">
+                                <ChampionFilterSection
+                                    championFilters={championFilters}
+                                    championOverrides={championOverrides}
+                                    setChampionOverrides={setChampionOverrides}
+                                />
+                            </div>
+                        )}
+                    </div>
+
                     <div className="flex-1">
                         {loading ? (
                             <div className="flex justify-center py-12">
-                                <div className="animate-spin rounded-full size-12 border-t-2 border-b-2 border-zinc-500" />
+                                <div
+                                    className="animate-spin rounded-full size-12 border-t-2 border-b-2 border-zinc-500"/>
                             </div>
                         ) : (
                             <div className="flex flex-col gap-4">
@@ -108,7 +138,7 @@ export default function Home() {
                         )}
                     </div>
 
-                    <div className="w-md">
+                    <div className="w-full hidden lg:block lg:w-md">
                         <ChampionFilterSection
                             championFilters={championFilters}
                             championOverrides={championOverrides}
@@ -117,7 +147,7 @@ export default function Home() {
                     </div>
                 </div>
             </main>
-            <Footer />
+            <Footer/>
         </div>
     );
 }

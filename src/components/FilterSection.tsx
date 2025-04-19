@@ -101,9 +101,8 @@ export default function FilterSection({
             <div className="flex items-start justify-between gap-4">
                 <div>
                     <h2 className="text-xl text-white font-bold">Emblem Filters</h2>
-                    <p className="text-zinc-400 text-sm">
-                        Add your emblems to see comps that use the fewest units and lowest cost.
-                        (up to 4).
+                    <p className="text-zinc-400 text-sm hidden md:block">
+                        Add your emblems to see comps that use the fewest units and lowest cost. (up to 4).
                     </p>
                 </div>
                 <div className="flex gap-2">
@@ -117,11 +116,13 @@ export default function FilterSection({
                                     : "bg-emerald-500 hover:bg-emerald-600"
                             } text-white`}
                         >
-                            {hideTraits ? <LuEyeOff className="w-5 h-5" /> : <LuEye className="w-5 h-5" />}
+                            {hideTraits ? <LuEyeOff className="w-5 h-5"/> : <LuEye className="w-5 h-5"/>}
                         </button>
-                        <span className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-zinc-800 bg-opacity-70 text-white text-xs rounded whitespace-nowrap text-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
+                        <span
+                            className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-zinc-800 bg-opacity-70 text-white text-xs rounded whitespace-nowrap text-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
               Toggle Comp Traits
-              <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-6 border-l-transparent border-r-6 border-r-transparent border-t-6 border-t-zinc-800"></div>
+              <div
+                  className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-6 border-l-transparent border-r-6 border-r-transparent border-t-6 border-t-zinc-800"></div>
             </span>
                     </div>
                     {/* Reset Filters Button */}
@@ -130,11 +131,13 @@ export default function FilterSection({
                             onClick={resetFilters}
                             className="p-2 bg-zinc-800 hover:bg-zinc-700 text-white rounded cursor-pointer"
                         >
-                            <LuRefreshCw className="w-5 h-5" />
+                            <LuRefreshCw className="w-5 h-5"/>
                         </button>
-                        <span className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-zinc-800 bg-opacity-70 text-white text-xs rounded whitespace-nowrap text-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
+                        <span
+                            className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-zinc-800 bg-opacity-70 text-white text-xs rounded whitespace-nowrap text-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
               Reset Filters
-              <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-6 border-l-transparent border-r-6 border-r-transparent border-t-6 border-t-zinc-800"></div>
+              <div
+                  className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-6 border-l-transparent border-r-6 border-r-transparent border-t-6 border-t-zinc-800"></div>
             </span>
                     </div>
                     {/* Filter Help Button */}
@@ -143,11 +146,13 @@ export default function FilterSection({
                             onClick={() => setFilterHelpOpen(true)}
                             className="p-2 bg-zinc-800 hover:bg-zinc-700 text-white rounded cursor-pointer"
                         >
-                            <LuCircleHelp className="w-5 h-5" />
+                            <LuCircleHelp className="w-5 h-5"/>
                         </button>
-                        <span className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-zinc-800 bg-opacity-70 text-white text-xs rounded whitespace-nowrap text-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
+                        <span
+                            className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-zinc-800 bg-opacity-70 text-white text-xs rounded whitespace-nowrap text-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
               Filter Help
-              <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-6 border-l-transparent border-r-6 border-r-transparent border-t-6 border-t-zinc-800"></div>
+              <div
+                  className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-6 border-l-transparent border-r-6 border-r-transparent border-t-6 border-t-zinc-800"></div>
             </span>
                     </div>
                 </div>
@@ -165,14 +170,13 @@ export default function FilterSection({
             </Modal>
 
             {/* Emblem grid: separate the image from the +/– controls */}
-            <div className="mt-4 flex flex-wrap gap-2">
+            <div className="mt-4 grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-11 2xl:grid-cols-17 gap-2">
                 {ELIGIBLE_BONUS_TRAITS.map((trait) => {
                     const imageFile = `tft14_emblem_${trait.replace(/ /g, "").toLowerCase()}.tft_set14.png`;
                     const count = filters[trait] || 0;
                     return (
                         <div key={trait} className="flex flex-col items-center">
                             <div className="relative w-12 h-12 mb-1">
-                                {/* Only the image gets the hover popover */}
                                 <div className="group relative">
                                     <Image
                                         src={`/emblems/${imageFile}`}
@@ -182,22 +186,24 @@ export default function FilterSection({
                                         className="object-contain"
                                         draggable={false}
                                     />
-                                    <span className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-zinc-800 bg-opacity-70 text-white text-xs rounded whitespace-nowrap text-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
+                                    <span
+                                        className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-zinc-800 bg-opacity-70 text-white text-xs rounded whitespace-nowrap text-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
                     {trait}
-                                        <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-6 border-l-transparent border-r-6 border-r-transparent border-t-6 border-t-zinc-800"></div>
+                                        <div
+                                            className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-6 border-l-transparent border-r-6 border-r-transparent border-t-6 border-t-zinc-800"></div>
                   </span>
                                 </div>
                             </div>
-                            {/* Controls: Fixed-width number container so they don't change width */}
                             <div className="flex items-center gap-[1.5px]">
                                 <button
                                     onClick={() => updateFilter(trait, -1)}
                                     disabled={count === 0}
                                     className="p-1 bg-zinc-800 border border-zinc-700 rounded hover:bg-zinc-700 cursor-pointer disabled:opacity-50 disabled:cursor-default disabled:hover:bg-zinc-800"
                                 >
-                                    <LuMinus className="w-4 h-4 text-zinc-200" />
+                                    <LuMinus className="w-4 h-4 text-zinc-200"/>
                                 </button>
-                                <span className={count > 0 ? "w-6 text-center text-emerald-400" : "w-6 text-center text-white"}>
+                                <span
+                                    className={count > 0 ? "w-6 text-center text-emerald-400" : "w-6 text-center text-white"}>
                   {count}
                 </span>
                                 <button
@@ -205,7 +211,7 @@ export default function FilterSection({
                                     disabled={count === MAX_BONUS_MAP[trait] || totalBonus >= 4}
                                     className="p-1 bg-zinc-800 border border-zinc-700 rounded hover:bg-zinc-700 cursor-pointer disabled:opacity-50 disabled:cursor-default disabled:hover:bg-zinc-800"
                                 >
-                                    <LuPlus className="w-4 h-4 text-zinc-200" />
+                                    <LuPlus className="w-4 h-4 text-zinc-200"/>
                                 </button>
                             </div>
                         </div>

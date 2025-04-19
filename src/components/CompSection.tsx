@@ -133,7 +133,7 @@ export default function CompSection({ compData, hideTraits, filters }: CompSecti
                                         );
                                     })}
                                 </div>
-                                <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-1 w-2 h-2 bg-zinc-800 rotate-45"></div>
+                                <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-zinc-800 rotate-45 z-[-1]"/>
                             </div>
                         </div>
                     );
