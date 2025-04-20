@@ -1,4 +1,3 @@
-// app/page.tsx
 "use client";
 
 import Script from "next/script";
@@ -150,8 +149,12 @@ export default function Home() {
     }, [filteredSolutions, compactView]);
 
     return (
-        <div className="min-h-screen flex flex-col bg-fixed bg-cover bg-center overflow-x-hidden overflow-y-auto bg-[url(/bg.png)]">
-            <Header />
+        <div
+            className="min-h-screen flex flex-col bg-fixed bg-cover bg-center overflow-x-hidden overflow-y-auto bg-[url(/bg.png)]">
+            <Header/>
+            <h1 className="sr-only">
+                Trait Tracker – TFT Set 14 Augment Optimizer Tool
+            </h1>
             <main className="flex-grow w-full max-w-screen-2xl mx-auto px-3 py-4">
                 {/* Emblem Filters */}
                 <aside
@@ -234,9 +237,9 @@ export default function Home() {
                   "
                                 >
                                     {compactView ? (
-                                        <FaExpand className="size-4 text-white" />
+                                        <FaExpand className="size-4 text-white"/>
                                     ) : (
-                                        <FaCompress className="size-4 text-white" />
+                                        <FaCompress className="size-4 text-white"/>
                                     )}
                                     <span className="text-sm">
                     {compactView
@@ -260,9 +263,9 @@ export default function Home() {
                   "
                                 >
                                     {hideTraits ? (
-                                        <FaEyeSlash className="size-4 text-white" />
+                                        <FaEyeSlash className="size-4 text-white"/>
                                     ) : (
-                                        <FaEye className="size-4 text-white" />
+                                        <FaEye className="size-4 text-white"/>
                                     )}
                                     <span className="text-sm">
                     {hideTraits
@@ -275,7 +278,8 @@ export default function Home() {
 
                         {loading ? (
                             <div className="flex justify-center py-12">
-                                <div className="animate-spin rounded-full size-12 border-t-2 border-b-2 border-zinc-500" />
+                                <div
+                                    className="animate-spin rounded-full size-12 border-t-2 border-b-2 border-zinc-500"/>
                             </div>
                         ) : (
                             <ul
@@ -296,7 +300,8 @@ export default function Home() {
                                     ))
                                 ) : (
                                     <li>
-                                        <div className="text-center py-12 bg-zinc-900 rounded-lg border border-zinc-800">
+                                        <div
+                                            className="text-center py-12 bg-zinc-900/75 rounded-lg border border-zinc-800">
                                             <p className="text-zinc-400">
                                                 No compositions found. Try adjusting
                                                 your filters.
@@ -324,7 +329,7 @@ export default function Home() {
                 </div>
             </main>
 
-            <Footer />
+            <Footer/>
             <Script
                 id="trait-tracker-jsonld"
                 type="application/ld+json"

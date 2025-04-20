@@ -1,4 +1,3 @@
-// components/CompSection.tsx
 "use client";
 import { useMemo, useState, useId } from "react";
 import Image from "next/image";

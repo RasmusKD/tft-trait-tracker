@@ -9,7 +9,7 @@ export default function Header() {
 
     return (
         <>
-            <header className="bg-zinc-900/80 border-b border-zinc-800 shadow-md">
+            <header className="bg-zinc-900/75 border-b border-zinc-800 shadow-md">
                 <div className="w-full max-w-screen-2xl mx-auto px-6 py-3 flex items-center justify-between">
                     <div className="flex items-center gap-3">
                         <div className="relative w-16 h-16">
