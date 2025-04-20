@@ -107,6 +107,7 @@ export default function CompSection({
                         >
               <Image
                   src={`/trait-icons/Trait_Icon_14_${trait.replace(/ /g, "")}.TFT_Set14.png`}
+                  loading="lazy"
                   alt={trait}
                   width={20}
                   height={20}
@@ -180,6 +181,7 @@ export default function CompSection({
                                         >
                       <Image
                           src={`/trait-icons/Trait_Icon_14_${trait.replace(/ /g, "")}.TFT_Set14.png`}
+                          loading="lazy"
                           alt={trait}
                           width={16}
                           height={16}
