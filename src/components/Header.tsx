@@ -10,7 +10,7 @@ export default function Header() {
     return (
         <>
             <header className="bg-zinc-900 border-b border-zinc-800 shadow-md">
-                <div className="container mx-auto px-6 py-3 flex items-center justify-between">
+                <div className="w-full max-w-screen-2xl mx-auto px-6 py-3 flex items-center justify-between">
                     <div className="flex items-center gap-3">
                         <div className="relative w-16 h-16">
                             <Image
@@ -37,7 +37,7 @@ export default function Header() {
                 </div>
             </header>
 
-            <Modal title="How the Tool Works" isOpen={helpOpen} onClose={() => setHelpOpen(false)}>
+            <Modal title="How the Tool Works" isOpen={helpOpen} onCloseAction={() => setHelpOpen(false)}>
                 <p>
                     Traittracker.gg helps you easily activate <strong>8 different traits</strong> in a single round —
                     the requirement to trigger the <strong>Trait Tracker augment</strong> in TFT.

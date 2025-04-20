@@ -46,19 +46,18 @@ export default function Home() {
 
     const [comps, setComps] = useState<PrecomputedComps>({});
     const [loading, setLoading] = useState(false);
-    const [showChampionFiltersMobile, setShowChampionFiltersMobile] = useState(false);
+    const [showChampionFiltersMobile, setShowChampionFiltersMobile] =
+        useState(false);
 
     const lookupKey = useMemo(() => bonusDictToKey(filters), [filters]);
 
     useEffect(() => {
-        if (typeof window !== "undefined") {
-            const isMobile = window.innerWidth < 1024;
-            if (isMobile) {
-                setHideTraits(true);
-            }
+        if (typeof window !== "undefined" && window.innerWidth < 1024) {
+            setHideTraits(true);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
+
 
     useEffect(() => {
         setLoading(true);
@@ -68,8 +67,8 @@ export default function Home() {
                     ? (res.json() as Promise<PrecomputedComps>)
                     : Promise.reject(`HTTP ${res.status}`)
             )
-            .then((data) => setComps(data))
-            .catch((err) => console.error(err))
+            .then(setComps)
+            .catch(console.error)
             .finally(() => setLoading(false));
     }, [lookupKey]);
 
@@ -81,72 +80,101 @@ export default function Home() {
     );
 
     return (
-        <div className="min-h-screen flex flex-col bg-zinc-950">
-            <Header />
-            <main className="flex-grow container mx-auto px-3 py-4">
-                <FilterSection
-                    filters={filters}
-                    setFiltersAction={setFilters}
-                    hideTraits={hideTraits}
-                    setHideTraitsAction={setHideTraits}
-                />
+        <div className="min-h-screen flex flex-col bg-cover bg-center overflow-x-hidden">
+            <Header/>
+            <main className="flex-grow w-full max-w-screen-2xl mx-auto px-3 py-4">
+                {/* Emblem Filters */}
+                <aside aria-label="Emblem Filters" className="mb-4 min-w-0">
+                    <FilterSection
+                        filters={filters}
+                        setFiltersAction={setFilters}
+                        hideTraits={hideTraits}
+                        setHideTraitsAction={setHideTraits}
+                    />
+                </aside>
 
-                <div className="flex flex-col lg:flex-row gap-4 mt-4">
-                    <div className="block lg:hidden ">
+                <div className="flex flex-col lg:flex-row gap-4">
+                    {/* Mobile Champion Filters Toggle */}
+                    <div className="block lg:hidden">
                         <button
-                            onClick={() => setShowChampionFiltersMobile((prev) => !prev)}
+                            onClick={() =>
+                                setShowChampionFiltersMobile((prev) => !prev)
+                            }
                             className="bg-zinc-800 text-white px-4 py-2 rounded hover:bg-zinc-700 transition w-full"
                         >
-                            {showChampionFiltersMobile ? "Hide Champion Filters" : "Show Champion Filters"}
+                            {showChampionFiltersMobile
+                                ? "Hide Champion Filters"
+                                : "Show Champion Filters"}
                         </button>
+
                         {showChampionFiltersMobile && (
-                            <div className="mt-4">
+                            <aside
+                                aria-label="Champion Filters"
+                                className="mt-4 min-w-0"
+                            >
                                 <ChampionFilterSection
                                     championFilters={championFilters}
                                     championOverrides={championOverrides}
-                                    setChampionOverrides={setChampionOverrides}
+                                    setChampionOverridesAction={setChampionOverrides}
                                 />
-                            </div>
+                            </aside>
                         )}
                     </div>
 
-                    <div className="flex-1">
+                    {/* Composition Results */}
+                    <section
+                        aria-labelledby="comps-heading"
+                        className="flex-1 min-w-0"
+                    >
+                        <h2 id="comps-heading" className="sr-only">
+                            Team Compositions
+                        </h2>
+
                         {loading ? (
                             <div className="flex justify-center py-12">
                                 <div
                                     className="animate-spin rounded-full size-12 border-t-2 border-b-2 border-zinc-500"/>
                             </div>
                         ) : (
-                            <div className="flex flex-col gap-4">
+                            <ul className="flex flex-col gap-4" role="list">
                                 {filteredSolutions.length > 0 ? (
                                     filteredSolutions.map((solution, idx) => (
-                                        <CompSection
-                                            key={idx}
-                                            compData={solution}
-                                            hideTraits={hideTraits}
-                                            filters={filters}
-                                        />
+                                        <li key={idx}>
+                                            <CompSection
+                                                compData={solution}
+                                                hideTraits={hideTraits}
+                                                filters={filters}
+                                            />
+                                        </li>
                                     ))
                                 ) : (
-                                    <div className="text-center py-12 bg-zinc-900 rounded-lg border border-zinc-800">
-                                        <p className="text-zinc-400">
-                                            No compositions found. Try adjusting your filters.
-                                        </p>
-                                    </div>
+                                    <li>
+                                        <div
+                                            className="text-center py-12 bg-zinc-900 rounded-lg border border-zinc-800">
+                                            <p className="text-zinc-400">
+                                                No compositions found. Try adjusting your filters.
+                                            </p>
+                                        </div>
+                                    </li>
                                 )}
-                            </div>
+                            </ul>
                         )}
-                    </div>
+                    </section>
 
-                    <div className="w-full hidden lg:block lg:w-md">
+                    {/* Desktop Champion Filters */}
+                    <aside
+                        aria-label="Champion Filters"
+                        className="hidden lg:block lg:w-md min-w-0"
+                    >
                         <ChampionFilterSection
                             championFilters={championFilters}
                             championOverrides={championOverrides}
-                            setChampionOverrides={setChampionOverrides}
+                            setChampionOverridesAction={setChampionOverrides}
                         />
-                    </div>
+                    </aside>
                 </div>
             </main>
+
             <Footer/>
         </div>
     );
