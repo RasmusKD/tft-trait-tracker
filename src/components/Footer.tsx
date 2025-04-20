@@ -16,7 +16,7 @@ export default function Footer() {
     };
 
     return (
-        <footer className="flex flex-col gap-1 items-center justify-center p-4 bg-zinc-900 border-t border-zinc-800 text-sm text-zinc-400 font-mono">
+        <footer className="flex flex-col gap-1 items-center justify-center p-4 bg-zinc-900/75 border-t border-zinc-800 text-sm text-zinc-400 font-mono">
             <div className="flex flex-wrap items-center justify-center gap-2 text-center relative">
                 Made with <span className="text-red-500">❤</span> by
                 <a
@@ -51,7 +51,7 @@ export default function Footer() {
             </div>
 
             <p className="text-xs text-zinc-500 text-center">
-                TraitTracker Beta v0.4
+                TraitTracker Beta v0.8
             </p>
             <p className="text-xs text-zinc-500 text-center">
                 TraitTracker.gg is a fan-made tool and is not affiliated with or endorsed by Riot Games. All Teamfight Tactics assets and trademarks are © Riot Games.

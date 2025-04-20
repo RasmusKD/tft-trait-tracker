@@ -3,6 +3,7 @@ import React, { useMemo, useState } from "react";
 import Image from "next/image";
 import { LuRefreshCw, LuCircleHelp } from "react-icons/lu";
 import { GiTwoCoins } from "react-icons/gi";
+import { FaCompress, FaExpand } from "react-icons/fa";
 import { getChampionBorderClass } from "@/utils/championUtils";
 import { championMapping } from "@/utils/championMapping";
 import Tooltip from "../components/Tooltip";
@@ -69,7 +70,7 @@ export default function ChampionFilterSection({
     return (
         <section
             aria-labelledby="champion-filters-heading"
-            className="bg-zinc-900 border border-zinc-800 shadow-lg rounded p-4 min-w-0"
+            className="bg-zinc-900/75 border border-zinc-800 shadow-lg rounded p-4 min-w-0"
         >
             {/* Header */}
             <div className="flex items-center justify-between mb-2 border-b border-zinc-800 pb-2">

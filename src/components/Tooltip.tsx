@@ -23,7 +23,7 @@ export default function Tooltip({ text, children }: TooltipProps) {
           opacity-0 group-hover:opacity-100
           transition-opacity
           whitespace-nowrap
-          pointer-events-none
+          pointer-events-none z-10
         "
             >
                 {text}

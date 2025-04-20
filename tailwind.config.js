@@ -1,16 +1,22 @@
 module.exports = {
+    // 1. Make sure Tailwind scans your files:
     content: [
-        "./pages/**/*.{js,jsx}",
-        "./components/**/*.{js,jsx}"
+        './app/**/*.{js,ts,jsx,tsx}',
+        './pages/**/*.{js,ts,jsx,tsx}',
+        './components/**/*.{js,ts,jsx,tsx}',
     ],
     theme: {
         extend: {
-            // Optionally extend your theme here (e.g. add your chosen font)
-            fontFamily: {
-                // Using a modern, versatile font such as "Inter"
-                inter: ['Inter', 'sans-serif']
+            keyframes: {
+                pulseGlow: {
+                    '0%, 100%': { boxShadow: '0 0 8px rgba(255, 255, 255, 0.5)' },
+                    '50%':     { boxShadow: '0 0 16px rgba(255, 255, 255, 1)' },
+                },
+            },
+            animation: {
+                'pulse-glow': 'pulseGlow 2s ease-in-out infinite',
             },
         },
     },
-    plugins: [],
-}
+    // keep any existing plugins or overrides here
+};

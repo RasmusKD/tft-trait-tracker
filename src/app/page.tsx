@@ -1,10 +1,18 @@
+// app/page.tsx
 "use client";
 
+import Script from "next/script";
 import { useState, useEffect, useMemo } from "react";
+import {
+    FaCompress,
+    FaExpand,
+    FaEye,
+    FaEyeSlash,
+} from "react-icons/fa";
 import Header from "../components/Header";
 import FilterSection from "../components/FilterSection";
 import ChampionFilterSection from "../components/ChampionFilterSection";
-import CompSection from "../components/CompSection";
+import CompSection, { Variant } from "../components/CompSection";
 import Footer from "../components/Footer";
 import usePersistedState from "../hooks/usePersistedState";
 import { championMapping } from "@/utils/championMapping";
@@ -31,9 +39,15 @@ export default function Home() {
         "hideTraits",
         false
     );
-    const [championOverrides, setChampionOverrides] = usePersistedState<
-        Partial<Record<string, boolean>>
-    >("championOverrides", {});
+    const [compactView, setCompactView] = usePersistedState<boolean>(
+        "compactView",
+        false
+    );
+    const [championOverrides, setChampionOverrides] =
+        usePersistedState<Partial<Record<string, boolean>>>(
+            "championOverrides",
+            {}
+        );
 
     const championFilters = useMemo(() => {
         const map: Record<string, boolean> = {};
@@ -52,12 +66,14 @@ export default function Home() {
     const lookupKey = useMemo(() => bonusDictToKey(filters), [filters]);
 
     useEffect(() => {
-        if (typeof window !== "undefined" && window.innerWidth < 1024) {
+        if (
+            typeof window !== "undefined" &&
+            window.innerWidth < 1024
+        ) {
             setHideTraits(true);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
-
 
     useEffect(() => {
         setLoading(true);
@@ -73,23 +89,79 @@ export default function Home() {
     }, [lookupKey]);
 
     const allSolutions: CompData[] =
-        comps[lookupKey]?.solutions ?? comps["none"]?.solutions ?? [];
+        comps[lookupKey]?.solutions ??
+        comps["none"]?.solutions ??
+        [];
 
     const filteredSolutions = allSolutions.filter((sol) =>
         sol.selected_champions.every((c) => championFilters[c])
     );
 
+    const displayGroups = useMemo(() => {
+        type Group = {
+            base: CompData;
+            variants?: Variant[];
+        };
+        const groups: Group[] = [];
+        if (!compactView) {
+            filteredSolutions.forEach((sol) =>
+                groups.push({ base: sol })
+            );
+            return groups;
+        }
+        const visited = new Array(filteredSolutions.length).fill(
+            false
+        );
+        for (let i = 0; i < filteredSolutions.length; i++) {
+            if (visited[i]) continue;
+            const solA = filteredSolutions[i];
+            const variants: Variant[] = [];
+            const setA = new Set(solA.selected_champions);
+            for (let j = i + 1; j < filteredSolutions.length; j++) {
+                if (visited[j]) continue;
+                const solB = filteredSolutions[j];
+                if (
+                    solB.selected_champions.length !==
+                    solA.selected_champions.length
+                )
+                    continue;
+                const setB = new Set(solB.selected_champions);
+                const diffA = solA.selected_champions.filter(
+                    (x) => !setB.has(x)
+                );
+                const diffB = solB.selected_champions.filter(
+                    (x) => !setA.has(x)
+                );
+                if (diffA.length === 1 && diffB.length === 1) {
+                    variants.push({
+                        baseOnly: diffA[0],
+                        variant: diffB[0],
+                    });
+                    visited[j] = true;
+                }
+            }
+            visited[i] = true;
+            groups.push({
+                base: solA,
+                variants: variants.length > 0 ? variants : undefined,
+            });
+        }
+        return groups;
+    }, [filteredSolutions, compactView]);
+
     return (
-        <div className="min-h-screen flex flex-col bg-cover bg-center overflow-x-hidden">
-            <Header/>
+        <div className="min-h-screen flex flex-col bg-fixed bg-cover bg-center overflow-x-hidden overflow-y-auto bg-[url(/bg.png)]">
+            <Header />
             <main className="flex-grow w-full max-w-screen-2xl mx-auto px-3 py-4">
                 {/* Emblem Filters */}
-                <aside aria-label="Emblem Filters" className="mb-4 min-w-0">
+                <aside
+                    aria-label="Emblem Filters"
+                    className="mb-4 min-w-0"
+                >
                     <FilterSection
                         filters={filters}
                         setFiltersAction={setFilters}
-                        hideTraits={hideTraits}
-                        setHideTraitsAction={setHideTraits}
+                        // remove hideTraits from here
                     />
                 </aside>
 
@@ -98,9 +170,11 @@ export default function Home() {
                     <div className="block lg:hidden">
                         <button
                             onClick={() =>
-                                setShowChampionFiltersMobile((prev) => !prev)
+                                setShowChampionFiltersMobile(
+                                    (prev) => !prev
+                                )
                             }
-                            className="bg-zinc-800 text-white px-4 py-2 rounded hover:bg-zinc-700 transition w-full"
+                            className="bg-zinc-900/75 border border-zinc-800 text-white px-4 py-2 rounded hover:bg-zinc-800/75 transition w-full"
                         >
                             {showChampionFiltersMobile
                                 ? "Hide Champion Filters"
@@ -115,7 +189,9 @@ export default function Home() {
                                 <ChampionFilterSection
                                     championFilters={championFilters}
                                     championOverrides={championOverrides}
-                                    setChampionOverridesAction={setChampionOverrides}
+                                    setChampionOverridesAction={
+                                        setChampionOverrides
+                                    }
                                 />
                             </aside>
                         )}
@@ -130,29 +206,100 @@ export default function Home() {
                             Team Compositions
                         </h2>
 
+                        {/* View Mode & Traits Bar */}
+                        <div
+                            className="
+                bg-zinc-900/75 border border-zinc-800
+                shadow-lg rounded p-4 min-w-0 mb-4
+                flex items-center justify-between
+              "
+                        >
+              <span className="text-sm text-zinc-200 font-semibold">
+                Display Mode
+              </span>
+                            <div className="flex items-center gap-4">
+                                <button
+                                    onClick={() =>
+                                        setCompactView((prev) => !prev)
+                                    }
+                                    aria-label={
+                                        compactView
+                                            ? "Switch to detailed view"
+                                            : "Switch to compact view"
+                                    }
+                                    className="
+                    flex items-center gap-2
+                    hover:bg-zinc-800 text-white
+                    px-3 py-1 rounded-lg transition
+                  "
+                                >
+                                    {compactView ? (
+                                        <FaExpand className="size-4 text-white" />
+                                    ) : (
+                                        <FaCompress className="size-4 text-white" />
+                                    )}
+                                    <span className="text-sm">
+                    {compactView
+                        ? "Detailed"
+                        : "Compact"}
+                  </span>
+                                </button>
+                                <button
+                                    onClick={() =>
+                                        setHideTraits((prev) => !prev)
+                                    }
+                                    aria-label={
+                                        hideTraits
+                                            ? "Show traits"
+                                            : "Hide traits"
+                                    }
+                                    className="
+                    flex items-center gap-2
+                    hover:bg-zinc-800 text-white
+                    px-3 py-1 rounded-lg transition
+                  "
+                                >
+                                    {hideTraits ? (
+                                        <FaEyeSlash className="size-4 text-white" />
+                                    ) : (
+                                        <FaEye className="size-4 text-white" />
+                                    )}
+                                    <span className="text-sm">
+                    {hideTraits
+                        ? "Show Traits"
+                        : "Hide Traits"}
+                  </span>
+                                </button>
+                            </div>
+                        </div>
+
                         {loading ? (
                             <div className="flex justify-center py-12">
-                                <div
-                                    className="animate-spin rounded-full size-12 border-t-2 border-b-2 border-zinc-500"/>
+                                <div className="animate-spin rounded-full size-12 border-t-2 border-b-2 border-zinc-500" />
                             </div>
                         ) : (
-                            <ul className="flex flex-col gap-4" role="list">
-                                {filteredSolutions.length > 0 ? (
-                                    filteredSolutions.map((solution, idx) => (
+                            <ul
+                                className="flex flex-col gap-4"
+                                role="list"
+                            >
+                                {displayGroups.length > 0 ? (
+                                    displayGroups.map((group, idx) => (
                                         <li key={idx}>
                                             <CompSection
-                                                compData={solution}
+                                                compData={group.base}
                                                 hideTraits={hideTraits}
                                                 filters={filters}
+                                                compact={compactView}
+                                                variants={group.variants}
                                             />
                                         </li>
                                     ))
                                 ) : (
                                     <li>
-                                        <div
-                                            className="text-center py-12 bg-zinc-900 rounded-lg border border-zinc-800">
+                                        <div className="text-center py-12 bg-zinc-900 rounded-lg border border-zinc-800">
                                             <p className="text-zinc-400">
-                                                No compositions found. Try adjusting your filters.
+                                                No compositions found. Try adjusting
+                                                your filters.
                                             </p>
                                         </div>
                                     </li>
@@ -169,13 +316,36 @@ export default function Home() {
                         <ChampionFilterSection
                             championFilters={championFilters}
                             championOverrides={championOverrides}
-                            setChampionOverridesAction={setChampionOverrides}
+                            setChampionOverridesAction={
+                                setChampionOverrides
+                            }
                         />
                     </aside>
                 </div>
             </main>
 
-            <Footer/>
+            <Footer />
+            <Script
+                id="trait-tracker-jsonld"
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{
+                    __html: JSON.stringify({
+                        "@context": "https://schema.org",
+                        "@type": "WebApplication",
+                        name: "Trait Tracker",
+                        url: "https://traittracker.gg",
+                        applicationCategory: "Gaming",
+                        browserRequirements:
+                            "Requires modern web browser",
+                        description:
+                            "Trait Tracker helps players easily activate the Trait Tracker augment in TFT Set 14 by finding champion combinations that meet the 8-trait requirement.",
+                        operatingSystem: "All",
+                        keywords:
+                            "TFT Set 14, Trait Tracker augment, TFT comps, TFT champion combinations",
+                        image: "https://traittracker.gg/og-image.png",
+                    }),
+                }}
+            />
         </div>
     );
 }
