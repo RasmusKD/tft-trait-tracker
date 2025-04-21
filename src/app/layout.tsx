@@ -57,7 +57,18 @@ export const metadata: Metadata = {
         locale: "en_US",
         type: "website",
     },
-
+    icons: {
+        icon: [
+            { url: "/favicon-96x96.png", type: "image/png", sizes: "96x96" },
+            { url: "/favicon.svg", type: "image/svg+xml" }
+        ],
+        shortcut: "/favicon.ico",
+        apple: "/apple-touch-icon.png",
+    },
+    manifest: "/site.webmanifest",
+    appleWebApp: {
+        title: "TraitTracker",
+    },
     other: {
         "google-adsense-account": "ca-pub-7482707847143668",
     },
@@ -70,9 +81,7 @@ export default function RootLayout({
 }) {
     return (
         <html lang="en" className="dark">
-        <body
-            className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-        >
+        <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         {children}
         </body>
         </html>
