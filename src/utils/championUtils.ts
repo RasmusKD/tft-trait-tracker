@@ -1,15 +1,32 @@
 import { championMapping } from "./championMapping";
 
-// Caches for memoization
+// Cache
 const tierCache: Record<string, number> = {};
 const borderClassCache: Record<string, string> = {};
+
+// Precompute tierCache and borderClassCache for all champions
+function deriveBorderClass(tier: number): string {
+    switch (tier) {
+        case 1: return "border-gray-400";
+        case 2: return "border-green-500";
+        case 3: return "border-blue-500";
+        case 4: return "border-purple-500";
+        case 5: return "border-yellow-500";
+        default: return "border-gray-400";
+    }
+}
+Object.entries(championMapping).forEach(([name, data]) => {
+    tierCache[name] = data.championTier;
+    borderClassCache[name] = deriveBorderClass(data.championTier);
+});
+
 /**
  * Sort a list of champion names by tier (low→high) and then alphabetically.
  */
 export function sortChampionsByTierAndName(champions: string[]): string[] {
     return [...champions].sort((a, b) => {
-        const tierA = championMapping[a]?.championTier ?? 99;
-        const tierB = championMapping[b]?.championTier ?? 99;
+        const tierA = tierCache[a] ?? 99;
+        const tierB = tierCache[b] ?? 99;
         if (tierA !== tierB) return tierA - tierB;
         return a.localeCompare(b);
     });
@@ -19,40 +36,14 @@ export function sortChampionsByTierAndName(champions: string[]): string[] {
  * Look up a champion’s TFT tier (1–5).
  */
 export function getChampionTier(championName: string): number {
-    if (!(championName in tierCache)) {
-        tierCache[championName] = championMapping[championName]?.championTier ?? 1;
-    }
-    return tierCache[championName];
+    return tierCache[championName] ?? 1;
 }
 
 /**
- * Choose a CSS border class based on TFT tier, memoized.
+ * Choose a CSS border class based on TFT tier, from cache.
  */
 export function getChampionBorderClass(championName: string): string {
-    if (!(championName in borderClassCache)) {
-        let cls: string;
-        switch (getChampionTier(championName)) {
-            case 1:
-                cls = "border-gray-400";
-                break;
-            case 2:
-                cls = "border-green-500";
-                break;
-            case 3:
-                cls = "border-blue-500";
-                break;
-            case 4:
-                cls = "border-purple-500";
-                break;
-            case 5:
-                cls = "border-yellow-500";
-                break;
-            default:
-                cls = "border-gray-400";
-        }
-        borderClassCache[championName] = cls;
-    }
-    return borderClassCache[championName];
+    return borderClassCache[championName] || "border-gray-400";
 }
 
 /**

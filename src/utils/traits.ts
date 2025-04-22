@@ -1,45 +1,39 @@
 import { championMapping, traitThresholds } from "@/utils/championMapping";
 
+// Reverse map champion → traits precomputed
+const reverseTraits: Record<string, string[]> = {};
+Object.entries(championMapping).forEach(([champ, data]) => {
+    reverseTraits[champ] = data.traits;
+});
+
+const activatedMemo: Record<string, string[]> = {};
+
 /**
- * getActivatedTraits computes the activated traits given a set of selected champions
- * and any bonus amounts (filters) applied.
- *
- * @param selectedChampions - An array of champion names.
- * @param filters - An object mapping trait names to bonus counts.
- * @returns A sorted array of trait names that are activated.
+ * Computes activated traits given selected champions and filters, memoized.
  */
 export function getActivatedTraits(
     selectedChampions: string[],
     filters: Record<string, number>
 ): string[] {
+    const key = selectedChampions.slice().sort().join(",") + "|" + JSON.stringify(filters);
+    if (activatedMemo[key]) return activatedMemo[key];
+
+    // Count champion-provided traits
     const traitCount: Record<string, number> = {};
-
-    // Count champion-provided traits based on championMapping.
-    for (const champion of selectedChampions) {
-        const championData = championMapping[champion];
-        if (championData) {
-            championData.traits.forEach((trait) => {
-                traitCount[trait] = (traitCount[trait] || 0) + 1;
-            });
-        }
+    for (const champ of selectedChampions) {
+        (reverseTraits[champ] || []).forEach((trait) => {
+            traitCount[trait] = (traitCount[trait] || 0) + 1;
+        });
     }
 
-    // Include both the traits that come from champions and the ones specified in filters.
-    const traitsSet = new Set<string>([
-        ...Object.keys(traitCount),
-        ...Object.keys(filters),
-    ]);
-
+    // Combine champion counts with filter bonuses
     const activated: string[] = [];
-    for (const trait of traitsSet) {
-        const championTotal = traitCount[trait] || 0;
-        const bonus = filters[trait] || 0;
-        const total = championTotal + bonus;
+    new Set([...Object.keys(traitCount), ...Object.keys(filters)]).forEach((trait) => {
+        const total = (traitCount[trait] || 0) + (filters[trait] || 0);
         const threshold = traitThresholds[trait];
-        if (threshold && total >= threshold) {
-            activated.push(trait);
-        }
-    }
+        if (threshold && total >= threshold) activated.push(trait);
+    });
 
-    return activated.sort();
+    activatedMemo[key] = activated.sort();
+    return activatedMemo[key];
 }

@@ -1,33 +1,30 @@
 import { championMapping } from "@/utils/championMapping";
 import { sortChampionsByTierAndName } from "@/utils/championUtils";
 
+const TARGET_SLOTS = 10;
+const CODE_PREFIX = "02";
+const SET_IDENTIFIER_PATTERN = /^TFTSet\d+$/;
+
 /**
- * buildTeamPlannerCode constructs the TFT Set 14 team code,
- * sorting champions via our shared helper and padding to 10 slots.
+ * Constructs the TFT Set team code, sorting champions and padding to 10 slots.
+ * Throws if setIdentifier doesn't match expected pattern.
  */
 export function buildTeamPlannerCode(
     selectedChampions: string[],
     setIdentifier: string
 ): string {
-    let code = "02";
-    const targetSlots = 10;
-
-    // Sort champions by tier then name
-    const sortedChampions = sortChampionsByTierAndName(selectedChampions);
-
-    // Pad to exactly 10 slots
-    const paddedChampions = [...sortedChampions];
-    while (paddedChampions.length < targetSlots) {
-        paddedChampions.push("Blank");
+    if (!SET_IDENTIFIER_PATTERN.test(setIdentifier)) {
+        throw new Error(`Invalid setIdentifier: ${setIdentifier}`);
     }
 
-    // Concatenate each champion's code (or "000" if missing)
-    paddedChampions.forEach((champion) => {
-        const championData = championMapping[champion] || null;
-        code += championData ? championData.teamPlannerCode : "000";
+    const sorted = sortChampionsByTierAndName(selectedChampions);
+    const padded = sorted.concat(Array(TARGET_SLOTS - sorted.length).fill("Blank"));
+
+    let code = CODE_PREFIX;
+    padded.forEach((champ) => {
+        const data = championMapping[champ];
+        code += data ? data.teamPlannerCode : "000";
     });
 
-    // Append the set identifier (e.g. "TFTSet14")
-    code += setIdentifier;
-    return code;
+    return code + setIdentifier;
 }
