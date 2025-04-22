@@ -1,5 +1,8 @@
 import { championMapping } from "./championMapping";
 
+// Caches for memoization
+const tierCache: Record<string, number> = {};
+const borderClassCache: Record<string, string> = {};
 /**
  * Sort a list of champion names by tier (low→high) and then alphabetically.
  */
@@ -16,21 +19,40 @@ export function sortChampionsByTierAndName(champions: string[]): string[] {
  * Look up a champion’s TFT tier (1–5).
  */
 export function getChampionTier(championName: string): number {
-    return championMapping[championName]?.championTier ?? 1;
+    if (!(championName in tierCache)) {
+        tierCache[championName] = championMapping[championName]?.championTier ?? 1;
+    }
+    return tierCache[championName];
 }
 
 /**
- * Choose a CSS border class based on TFT tier.
+ * Choose a CSS border class based on TFT tier, memoized.
  */
 export function getChampionBorderClass(championName: string): string {
-    switch (getChampionTier(championName)) {
-        case 1: return "border-gray-400";
-        case 2: return "border-green-500";
-        case 3: return "border-blue-500";
-        case 4: return "border-purple-500";
-        case 5: return "border-yellow-500";
-        default: return "border-gray-400";
+    if (!(championName in borderClassCache)) {
+        let cls: string;
+        switch (getChampionTier(championName)) {
+            case 1:
+                cls = "border-gray-400";
+                break;
+            case 2:
+                cls = "border-green-500";
+                break;
+            case 3:
+                cls = "border-blue-500";
+                break;
+            case 4:
+                cls = "border-purple-500";
+                break;
+            case 5:
+                cls = "border-yellow-500";
+                break;
+            default:
+                cls = "border-gray-400";
+        }
+        borderClassCache[championName] = cls;
     }
+    return borderClassCache[championName];
 }
 
 /**

@@ -87,14 +87,12 @@ export default function Home() {
             .finally(() => setLoading(false));
     }, [lookupKey]);
 
-    const allSolutions: CompData[] =
-        comps[lookupKey]?.solutions ??
-        comps["none"]?.solutions ??
-        [];
-
-    const filteredSolutions = allSolutions.filter((sol) =>
-        sol.selected_champions.every((c) => championFilters[c])
-    );
+    const filteredSolutions = useMemo(() => {
+        const all = comps[lookupKey]?.solutions ?? comps["none"]?.solutions ?? [];
+        return all.filter(sol =>
+            sol.selected_champions.every(c => championFilters[c])
+        );
+    }, [comps, lookupKey, championFilters]);
 
     const displayGroups = useMemo(() => {
         type Group = {
