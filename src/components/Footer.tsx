@@ -60,7 +60,7 @@ export default function Footer() {
             </div>
 
             <p className="text-xs text-zinc-500 text-center">
-                TraitTracker Beta v0.8
+                TraitTracker Beta v0.9
             </p>
             <p className="text-xs text-zinc-500 text-center">
                 TraitTracker.gg is a fan-made tool and is not affiliated with or endorsed by Riot Games. All Teamfight
