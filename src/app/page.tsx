@@ -1,7 +1,8 @@
 "use client";
 
 import Script from "next/script";
-import { useState, useEffect, useMemo } from "react";
+import noneData from "@/data/none_bucket.json";
+import {useState, useEffect, useMemo, useRef} from "react";
 import {
     FaCompress,
     FaExpand,
@@ -16,12 +17,8 @@ import Footer from "../components/Footer";
 import usePersistedState from "../hooks/usePersistedState";
 import { championMapping } from "@/utils/championMapping";
 
-interface CompData {
-    selected_champions: string[];
-}
-interface PrecomputedComps {
-    [key: string]: { solutions: CompData[] };
-}
+interface CompData { selected_champions: string[]; }
+interface PrecomputedComps { [key: string]: { solutions: CompData[] } }
 
 function bonusDictToKey(filters: Record<string, number>): string {
     const items = Object.entries(filters)
@@ -57,7 +54,12 @@ export default function Home() {
         return map;
     }, [championOverrides]);
 
-    const [comps, setComps] = useState<PrecomputedComps>({});
+    const [comps, setComps] = useState<PrecomputedComps>({
+        none: noneData.none
+    });
+    const cacheRef = useRef<Record<string, CompData[]>>({
+        none: noneData.none.solutions
+    });
     const [loading, setLoading] = useState(false);
     const [showChampionFiltersMobile, setShowChampionFiltersMobile] =
         useState(false);
@@ -75,14 +77,24 @@ export default function Home() {
     }, []);
 
     useEffect(() => {
+        const key = lookupKey;
+
+        if (cacheRef.current[key]) {
+            setComps({ [key]: { solutions: cacheRef.current[key] } });
+            return;
+        }
+
         setLoading(true);
-        fetch(`/api/comps?filterKey=${encodeURIComponent(lookupKey)}`)
+        fetch(`/api/comps?filterKey=${encodeURIComponent(key)}`)
             .then((res) =>
-                res.ok
-                    ? (res.json() as Promise<PrecomputedComps>)
-                    : Promise.reject(`HTTP ${res.status}`)
+                res.ok ? (res.json() as Promise<PrecomputedComps>) : Promise.reject(res.status)
             )
-            .then(setComps)
+            .then((data) => {
+                const sols = data[key]?.solutions || [];
+                // 5) Store in cache for next time
+                cacheRef.current[key] = sols;
+                setComps({ [key]: { solutions: sols } });
+            })
             .catch(console.error)
             .finally(() => setLoading(false));
     }, [lookupKey]);

@@ -1,0 +1,9 @@
+# *
+User-agent: *
+Allow: /
+
+# Host
+Host: https://traittracker.gg
+
+# Sitemaps
+Sitemap: https://traittracker.gg/sitemap.xml
