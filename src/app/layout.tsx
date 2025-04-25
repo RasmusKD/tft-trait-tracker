@@ -2,8 +2,9 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { Analytics } from "@vercel/analytics/react"
-import { SpeedInsights } from "@vercel/speed-insights/next"
+import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/next";
+import Script from "next/script";
 
 const geistSans = Geist({
     variable: "--font-geist-sans",
@@ -15,9 +16,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-    title: "Trait Tracker – TFT Set 14 Augment Optimizer (Patch 14.2)",
+    title: "Trait Tracker – TFT Set 14 Augment Optimizer (Patch 14.2)",
     description:
-        "Find optimal champion combinations to activate the Trait Tracker augment in TFT Set 14 (Patch 14.2). Get instant results and dominate your game!",
+        "Find optimal champion combinations to activate the Trait Tracker augment in TFT Set 14 (Patch 14.2). Get instant results and dominate your game!",
     keywords: [
         "TFT Set 14",
         "Patch 14.2",
@@ -43,9 +44,9 @@ export const metadata: Metadata = {
         follow: true,
     },
     openGraph: {
-        title: "Trait Tracker – TFT Set 14 Augment Optimizer (Patch 14.2)",
+        title: "Trait Tracker – TFT Set 14 Augment Optimizer (Patch 14.2)",
         description:
-            "Quickly discover the easiest champion combinations to activate your Trait Tracker augment in TFT Set 14 (Patch 14.2).",
+            "Quickly discover the easiest champion combinations to activate your Trait Tracker augment in TFT Set 14 (Patch 14.2).",
         url: "https://traittracker.gg",
         siteName: "Trait Tracker",
         images: [
@@ -83,6 +84,17 @@ export default function RootLayout({
 }) {
     return (
         <html lang="en" className="dark">
+        <head>
+            {process.env.NODE_ENV === 'production' && (
+                <Script
+                    id="adsense-script"
+                    async
+                    strategy="afterInteractive"
+                    src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7482707847143668"
+                    crossOrigin="anonymous"
+                />
+            )}
+        </head>
         <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         {children}
         <Analytics />
