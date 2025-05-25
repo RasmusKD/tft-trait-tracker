@@ -1,3 +1,4 @@
+// components/Header.tsx
 "use client";
 import { useState } from "react";
 import Image from "next/image";
@@ -50,7 +51,7 @@ export default function Header({
         <>
             <header className="bg-zinc-900/75 border-b border-zinc-800 shadow-md sticky top-0 z-40">
                 <div className="w-full max-w-screen-2xl mx-auto px-6 py-3">
-                    <div className="grid grid-cols-3 items-center">
+                    <div className="flex items-center justify-between">
                         {/* Left section - Logo */}
                         <div className="flex items-center gap-3">
                             <div className="relative w-12 h-12 md:w-16 md:h-16">
@@ -69,30 +70,27 @@ export default function Header({
                             </h1>
                         </div>
 
-                        <div className="flex justify-center">
-                            {showSelectorInHeader && (
-                                <div className="hidden lg:block">
-                                    <SetSwitcher />
-                                </div>
-                            )}
-                        </div>
+                        {/* Center section - Absolutely positioned for true centering */}
+                        {showSelectorInHeader && (
+                            <div className="hidden lg:block absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                                <SetSwitcher />
+                            </div>
+                        )}
 
                         {/* Right section - Info Button */}
-                        <div className="flex justify-end">
-                            <button
-                                onClick={() => setHelpOpen(true)}
-                                className="p-2 text-zinc-200 hover:text-white hover:bg-zinc-800 rounded cursor-pointer"
-                                type="button"
-                                aria-label="How the Tool Works"
-                            >
-                                <LuInfo className="w-6 h-6" />
-                                <span className="sr-only">How the Tool Works</span>
-                            </button>
-                        </div>
+                        <button
+                            onClick={() => setHelpOpen(true)}
+                            className="p-2 text-zinc-200 hover:text-white hover:bg-zinc-800 rounded cursor-pointer"
+                            type="button"
+                            aria-label="How the Tool Works"
+                        >
+                            <LuInfo className="w-6 h-6" />
+                            <span className="sr-only">How the Tool Works</span>
+                        </button>
                     </div>
                 </div>
             </header>
-            
+
             <Modal
                 title="How the Tool Works"
                 isOpen={helpOpen}
