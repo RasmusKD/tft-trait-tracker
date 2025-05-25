@@ -1,8 +1,9 @@
-import { championMapping } from "@/utils/championMapping";
-import { sortChampionsByTierAndName } from "@/utils/championUtils";
+import {
+    getChampionMappingForSet,
+    getSetConfig,
+} from "./championMapping";
+import { sortChampionsByTierAndName } from "./championUtils";
 
-const TARGET_SLOTS = 10;
-const CODE_PREFIX = "02";
 const SET_IDENTIFIER_PATTERN = /^TFTSet\d+$/;
 
 /**
@@ -10,17 +11,29 @@ const SET_IDENTIFIER_PATTERN = /^TFTSet\d+$/;
  * Throws if setIdentifier doesn't match expected pattern.
  */
 export function buildTeamPlannerCode(
-    selectedChampions: string[],
-    setIdentifier: string
+    setIdentifier: string,
+    selectedChampions: string[]
 ): string {
     if (!SET_IDENTIFIER_PATTERN.test(setIdentifier)) {
         throw new Error(`Invalid setIdentifier: ${setIdentifier}`);
     }
+    // Get Config and data for set
+    const championMapping = getChampionMappingForSet(setIdentifier);
+    const config = getSetConfig(setIdentifier);
 
-    const sorted = sortChampionsByTierAndName(selectedChampions);
-    const padded = sorted.concat(Array(TARGET_SLOTS - sorted.length).fill("Blank"));
+    if (!config) {
+        throw new Error(`No configuration found for set: ${setIdentifier}`);
+    }
 
-    let code = CODE_PREFIX;
+    const { teamPlannerCodePrefix, targetSlots } = config;
+
+    // Pass setIdentifier to sort function
+    const sorted = sortChampionsByTierAndName(setIdentifier, selectedChampions);
+    const padded = sorted.concat(
+        Array(Math.max(0, targetSlots - sorted.length)).fill("Blank")
+    );
+
+    let code = teamPlannerCodePrefix;
     padded.forEach((champ) => {
         const data = championMapping[champ];
         code += data ? data.teamPlannerCode : "000";

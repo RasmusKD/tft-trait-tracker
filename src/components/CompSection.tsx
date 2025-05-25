@@ -12,6 +12,7 @@ import {
 } from "@/utils/championUtils";
 import { getActivatedTraits } from "@/utils/traits";
 import { buildTeamPlannerCode } from "@/utils/teamPlanner";
+import { getSetConfig } from "@/utils/championMapping";
 
 export interface CompData {
     selected_champions: string[];
@@ -23,6 +24,7 @@ export interface Variant {
 }
 
 export interface CompSectionProps {
+    setIdentifier: string;
     compData: CompData;
     hideTraits?: boolean;
     filters: Record<string, number>;
@@ -31,6 +33,7 @@ export interface CompSectionProps {
 }
 
 export default function CompSection({
+                                        setIdentifier,
                                         compData,
                                         hideTraits,
                                         filters,
@@ -42,55 +45,67 @@ export default function CompSection({
     const [openDetails, setOpenDetails] = useState<Record<string, boolean>>({});
     const compId = useId();
 
-    // existing comp code
+    const setConfig = useMemo(() => getSetConfig(setIdentifier), [setIdentifier]);
+    const setFolder = useMemo(() => setIdentifier.toLowerCase(), [setIdentifier]); // e.g., "tftset14"
+
+
     const copyMain = async () => {
+        if (!setConfig) return;
         const code = buildTeamPlannerCode(
-            compData.selected_champions,
-            "TFTSet14"
+            setIdentifier,
+            compData.selected_champions
         );
         try {
             await navigator.clipboard.writeText(code);
             setCopiedMain(true);
             setTimeout(() => setCopiedMain(false), 1000);
-        } catch {}
+        } catch (err) {
+            console.error("Failed to copy main team code:", err);
+        }
     };
 
-    // new: combo code (main + variant champions, up to 10)
     const variantChamps = useMemo(
         () => Array.from(new Set(variants.map((v) => v.variant))),
         [variants]
     );
+
     const comboList = useMemo(() => {
+        if (!setConfig) return [];
         const arr = [...compData.selected_champions, ...variantChamps];
-        return arr.slice(0, 10);
-    }, [compData.selected_champions, variantChamps]);
+        return arr.slice(0, setConfig.targetSlots);
+    }, [compData.selected_champions, variantChamps, setConfig]);
+
     const copyCombo = async () => {
-        const code = buildTeamPlannerCode(comboList, "TFTSet14");
+        if (!setConfig || comboList.length === 0) return;
+        const code = buildTeamPlannerCode(setIdentifier, comboList);
         try {
             await navigator.clipboard.writeText(code);
             setCopiedCombo(true);
             setTimeout(() => setCopiedCombo(false), 1000);
-        } catch {}
+        } catch (err) {
+            console.error("Failed to copy combo team code:", err);
+        }
     };
 
     const sortedChampions = useMemo(
-        () => sortChampionsByTierAndName(compData.selected_champions),
-        [compData.selected_champions]
+        () => sortChampionsByTierAndName(setIdentifier, compData.selected_champions),
+        [setIdentifier, compData.selected_champions]
     );
+
     const activatedTraits = useMemo(
-        () => getActivatedTraits(compData.selected_champions, filters),
-        [compData.selected_champions, filters]
+        () => getActivatedTraits(setIdentifier, compData.selected_champions, filters),
+        [setIdentifier, compData.selected_champions, filters]
     );
+
     const computedTotal = useMemo(
         () =>
             sortedChampions.reduce(
-                (sum, champ) => sum + getChampionTier(champ),
+                (sum, champ) => sum + getChampionTier(setIdentifier, champ),
                 0
             ),
-        [sortedChampions]
+        [setIdentifier, sortedChampions]
     );
 
-    // map each base champ → its variant(s)
     const variantMap = useMemo(() => {
         const map: Record<string, string[]> = {};
         variants.forEach(({ baseOnly, variant }) => {
@@ -99,6 +114,14 @@ export default function CompSection({
         });
         return map;
     }, [variants]);
+
+    if (!setConfig) {
+        return (
+            <section className="bg-zinc-900/75 border border-zinc-800 shadow-xl rounded p-4">
+                <p className="text-red-500">Error: Comp details configuration not available for {setIdentifier.replace("TFTSet", "Set ")}.</p>
+            </section>
+        );
+    }
 
     return (
         <section
@@ -115,19 +138,10 @@ export default function CompSection({
                         <span className="font-semibold">{computedTotal}</span>
                         <GiTwoCoins className="size-5 text-yellow-400" />
                     </div>
-                    {/* main copy button */}
-                    <Tooltip
-                        text={
-                            copiedMain ? "Team Code Copied!" : "Copy Team Code"
-                        }
-                    >
+                    <Tooltip text={copiedMain ? "Team Code Copied!" : "Copy Team Code"}>
                         <button
                             onClick={copyMain}
-                            aria-label={
-                                copiedMain
-                                    ? "Team code copied"
-                                    : "Copy team code"
-                            }
+                            aria-label={copiedMain ? "Team code copied" : "Copy team code"}
                             className="p-2 bg-zinc-800 hover:bg-zinc-700 text-white rounded"
                         >
                             {copiedMain ? (
@@ -137,23 +151,13 @@ export default function CompSection({
                             )}
                         </button>
                     </Tooltip>
-
-                    {/* combined copy button (only if variants exist) */}
                     {variantChamps.length > 0 && (
                         <Tooltip
-                            text={
-                                copiedCombo
-                                    ? "Team code Copied!"
-                                    : "Copy Team Code + Variants"
-                            }
+                            text={copiedCombo ? "Team code Copied!" : "Copy Team Code + Variants"}
                         >
                             <button
                                 onClick={copyCombo}
-                                aria-label={
-                                    copiedCombo
-                                        ? "Combined code copied"
-                                        : "Copy combined code"
-                                }
+                                aria-label={copiedCombo ? "Combined code copied" : "Copy combined code"}
                                 className="p-2 bg-zinc-800 hover:bg-zinc-700 text-white rounded"
                             >
                                 {copiedCombo ? (
@@ -170,29 +174,29 @@ export default function CompSection({
             {/* Traits */}
             {!hideTraits && (
                 <div className="flex flex-wrap gap-2">
-                    {activatedTraits.map((trait, i) => (
-                        <span
-                            key={i}
-                            className="flex items-center bg-zinc-800 hover:bg-zinc-700 text-zinc-200 rounded px-2 py-1 text-sm"
-                        >
-              <Image
-                  src={`/trait-icons/Trait_Icon_14_${trait.replace(
-                      / /g,
-                      ""
-                  )}.TFT_Set14.png`}
-                  loading="lazy"
-                  alt={trait}
-                  width={20}
-                  height={20}
-                  className="mr-1"
-              />
-                            {trait}
-            </span>
-                    ))}
+                    {activatedTraits.map((trait, i) => {
+                        const traitIconFileName = trait.replace(/[\s/]/g, "");
+                        const imagePath = `/trait-icons/${setFolder}/${traitIconFileName}.png`;
+                        return (
+                            <span
+                                key={`${trait}-${i}`}
+                                className="flex items-center bg-zinc-800 hover:bg-zinc-700 text-zinc-200 rounded px-2 py-1 text-sm"
+                            >
+                <Image
+                    src={imagePath}
+                    loading="lazy"
+                    alt={`${trait} Icon`}
+                    width={20}
+                    height={20}
+                    className="mr-1"
+                    onError={(e) => { e.currentTarget.style.display = 'none'; console.warn(`Trait icon not found: ${imagePath}`); }}
+                />
+                                {trait}
+              </span>
+                        );
+                    })}
                 </div>
             )}
-
-            {/* Champions & Variants */}
             <ul role="list" className="flex flex-wrap gap-4">
                 {sortedChampions.map((champ) => {
                     const alts = variantMap[champ] || [];
@@ -201,10 +205,11 @@ export default function CompSection({
                             key={champ}
                             className="relative flex flex-col items-center gap-1 list-none"
                         >
-                            {/* main champion */}
-                            <ChampionTooltip champion={champ} size={64} />
-
-                            {/* inline variants */}
+                            <ChampionTooltip
+                                setIdentifier={setIdentifier}
+                                champion={champ}
+                                size={64}
+                            />
                             {compact && alts.length > 0 && (
                                 <>
                                     <button
@@ -230,6 +235,7 @@ export default function CompSection({
                                             {alts.map((alt) => (
                                                 <ChampionTooltip
                                                     key={alt}
+                                                    setIdentifier={setIdentifier}
                                                     champion={alt}
                                                     size={48}
                                                 />

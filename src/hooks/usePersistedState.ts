@@ -5,48 +5,69 @@ interface InMemoryStore {
 }
 const memoryStore: InMemoryStore = {};
 
-/**
- * Persists state to localStorage with debounce and fallback.
- */
 export default function usePersistedState<T>(
-    key: string,
-    defaultValue: T | (() => T)
-): [T, Dispatch<SetStateAction<T>>] {
-    // 1) Initialize to default immediately (same on server & client)
-    const initial =
-        typeof defaultValue === "function"
+    baseKey: string,
+    defaultValue: T | (() => T),
+    scope?: string,
+    getInitializedStatus?: boolean
+): [T, Dispatch<SetStateAction<T>>, boolean | undefined] {
+    const key = scope ? `${baseKey}-${scope}` : baseKey;
+    const [initialized, setInitialized] = useState(false);
+
+    const [state, setState] = useState<T>(() => {
+        return typeof defaultValue === 'function'
             ? (defaultValue as () => T)()
             : defaultValue;
-    const [state, setState] = useState<T>(initial);
+    });
 
     const timeoutRef = useRef<number | null>(null);
 
-    // 2) On mount, read any saved value and overwrite if present
+    // Read from localStorage on mount or when key changes
     useEffect(() => {
+        setInitialized(false);
         let isMounted = true;
-        try {
-            const stored = window.localStorage.getItem(key);
-            if (stored !== null && isMounted) {
-                setState(JSON.parse(stored) as T);
+
+        if (typeof window !== 'undefined') {
+            try {
+                const stored = window.localStorage.getItem(key);
+                if (stored !== null && isMounted) {
+                    setState(JSON.parse(stored) as T);
+                } else if (isMounted) {
+                    setState(typeof defaultValue === 'function' ? (defaultValue as () => T)() : defaultValue);
+                }
+            } catch (error) {
+                console.warn(`Error reading localStorage key "${key}":`, error);
+                if (isMounted) {
+                    setState(typeof defaultValue === 'function' ? (defaultValue as () => T)() : defaultValue);
+                }
+            } finally {
+                if(isMounted) {
+                    setInitialized(true);
+                }
             }
-        } catch {
-            // ignore
+        } else {
+            if (isMounted) setInitialized(true);
         }
+
         return () => {
             isMounted = false;
         };
     }, [key]);
 
-    // 3) Whenever state changes, write it back (debounced)
+    // Write to localStorage when state changes
     useEffect(() => {
+        if (!initialized || typeof window === 'undefined') {
+            return;
+        }
+
         if (timeoutRef.current !== null) {
             clearTimeout(timeoutRef.current);
         }
         timeoutRef.current = window.setTimeout(() => {
             try {
                 window.localStorage.setItem(key, JSON.stringify(state));
-            } catch {
-                // Fallback to in-memory
+            } catch (error) {
+                console.warn(`Error writing to localStorage key "${key}":`, error);
                 memoryStore[key] = state;
             }
         }, 100);
@@ -56,7 +77,7 @@ export default function usePersistedState<T>(
                 clearTimeout(timeoutRef.current);
             }
         };
-    }, [key, state]);
+    }, [key, state, initialized]);
 
-    return [state, setState];
+    return [state, setState, getInitializedStatus ? initialized : undefined];
 }

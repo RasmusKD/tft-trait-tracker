@@ -1,24 +1,47 @@
-import { championMapping, traitThresholds } from "@/utils/championMapping";
+import {
+    ChampionData,
+    getChampionMappingForSet,
+    getTraitThresholdsForSet,
+} from "./championMapping";
 
-// Reverse map champion → traits precomputed
-const reverseTraits: Record<string, string[]> = {};
-Object.entries(championMapping).forEach(([champ, data]) => {
-    reverseTraits[champ] = data.traits;
-});
+// Cache for reverseTraits: setIdentifier -> championName -> traits[]
+const reverseTraitsCache: Record<string, Record<string, string[]>> = {};
+
+function getReverseTraitsForSet(
+    setIdentifier: string,
+    championMappingForSet: Record<string, ChampionData>
+): Record<string, string[]> {
+    if (reverseTraitsCache[setIdentifier]) {
+        return reverseTraitsCache[setIdentifier];
+    }
+    const newReverseTraits: Record<string, string[]> = {};
+    Object.entries(championMappingForSet).forEach(([champ, data]) => {
+        newReverseTraits[champ] = data.traits;
+    });
+    reverseTraitsCache[setIdentifier] = newReverseTraits;
+    return newReverseTraits;
+}
 
 const activatedMemo: Record<string, string[]> = {};
 
-/**
- * Computes activated traits given selected champions and filters, memoized.
- */
 export function getActivatedTraits(
+    setIdentifier: string,
     selectedChampions: string[],
     filters: Record<string, number>
 ): string[] {
-    const key = selectedChampions.slice().sort().join(",") + "|" + JSON.stringify(filters);
-    if (activatedMemo[key]) return activatedMemo[key];
+    const memoKey =
+        `${setIdentifier}|${selectedChampions.slice().sort().join(",")}|` +
+        JSON.stringify(filters);
+    if (activatedMemo[memoKey]) return activatedMemo[memoKey];
 
-    // Count champion-provided traits
+    // Get data for the current set using helpers
+    const championMapping = getChampionMappingForSet(setIdentifier);
+    const traitThresholds = getTraitThresholdsForSet(setIdentifier);
+    const reverseTraits = getReverseTraitsForSet(
+        setIdentifier,
+        championMapping
+    );
+
     const traitCount: Record<string, number> = {};
     for (const champ of selectedChampions) {
         (reverseTraits[champ] || []).forEach((trait) => {
@@ -26,14 +49,15 @@ export function getActivatedTraits(
         });
     }
 
-    // Combine champion counts with filter bonuses
     const activated: string[] = [];
-    new Set([...Object.keys(traitCount), ...Object.keys(filters)]).forEach((trait) => {
-        const total = (traitCount[trait] || 0) + (filters[trait] || 0);
-        const threshold = traitThresholds[trait];
-        if (threshold && total >= threshold) activated.push(trait);
-    });
+    new Set([...Object.keys(traitCount), ...Object.keys(filters)]).forEach(
+        (trait) => {
+            const total = (traitCount[trait] || 0) + (filters[trait] || 0);
+            const threshold = traitThresholds[trait];
+            if (threshold && total >= threshold) activated.push(trait);
+        }
+    );
 
-    activatedMemo[key] = activated.sort();
-    return activatedMemo[key];
+    activatedMemo[memoKey] = activated.sort();
+    return activatedMemo[memoKey];
 }

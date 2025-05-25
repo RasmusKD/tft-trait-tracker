@@ -1,10 +1,10 @@
-// app/layout.tsx
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import Script from "next/script";
+import { APP_CONFIG, getAppTitle, getAppDescription } from "@/config/app";
 
 const geistSans = Geist({
     variable: "--font-geist-sans",
@@ -16,45 +16,53 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-    title: "Trait Tracker – TFT Set 14 Augment Optimizer (Patch 14.2)",
-    description:
-        "Find optimal champion combinations to activate the Trait Tracker augment in TFT Set 14 (Patch 14.2). Get instant results and dominate your game!",
+    title: getAppTitle(),
+    description: getAppDescription(),
     keywords: [
         "TFT Set 14",
-        "Patch 14.2",
+        "TFT Set 10",
+        "TFT Remix Rumble",
+        "TFT Revival",
+        "TFT Set 10 Revival",
+        "Remix Rumble Revival",
+        `Patch ${APP_CONFIG.patch}`,
         "Trait Tracker augment",
         "Trait Tracker Set 14",
+        "Trait Tracker Set 10",
         "Teamfight Tactics Set 14",
+        "Teamfight Tactics Remix Rumble",
         "TFT team comps",
-        "TFT augment optimizer",
         "TFT champion combinations",
+        "TFT trait tracker",
+        "TFT comp builder",
         "Trait Tracker comp builder",
+        "TFT augment optimizer",
+        "TFT meta comps",
     ],
     authors: [
         {
-            name: "RasmusKD",
-            url: "https://traittracker.gg",
+            name: APP_CONFIG.author.name,
+            url: APP_CONFIG.url,
         },
     ],
     alternates: {
-        canonical: "https://traittracker.gg",
+        canonical: APP_CONFIG.url,
     },
     robots: {
         index: true,
         follow: true,
     },
     openGraph: {
-        title: "Trait Tracker – TFT Set 14 Augment Optimizer (Patch 14.2)",
-        description:
-            "Quickly discover the easiest champion combinations to activate your Trait Tracker augment in TFT Set 14 (Patch 14.2).",
-        url: "https://traittracker.gg",
-        siteName: "Trait Tracker",
+        title: getAppTitle(),
+        description: getAppDescription(),
+        url: APP_CONFIG.url,
+        siteName: APP_CONFIG.name,
         images: [
             {
-                url: "https://traittracker.gg/og-image.png",
+                url: `${APP_CONFIG.url}/og-image.png`,
                 width: 1200,
                 height: 630,
-                alt: "Trait Tracker – TFT Set 14 Augment Optimizer (Patch 14.2)",
+                alt: `${APP_CONFIG.name} – TFT Set 14 Augment Optimizer (Patch ${APP_CONFIG.patch})`,
             },
         ],
         locale: "en_US",
@@ -70,10 +78,10 @@ export const metadata: Metadata = {
     },
     manifest: "/site.webmanifest",
     appleWebApp: {
-        title: "TraitTracker",
+        title: APP_CONFIG.name,
     },
     other: {
-        "google-adsense-account": "ca-pub-7482707847143668",
+        "google-adsense-account": APP_CONFIG.ads.googleAdsenseAccount,
     },
 };
 
@@ -90,7 +98,7 @@ export default function RootLayout({
                     id="adsense-script"
                     async
                     strategy="afterInteractive"
-                    src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7482707847143668"
+                    src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${APP_CONFIG.ads.googleAdsenseAccount}`}
                     crossOrigin="anonymous"
                 />
             )}
