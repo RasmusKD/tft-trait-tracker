@@ -136,34 +136,61 @@ export default function Home() {
     }, []);
 
     useEffect(() => {
-        if (!isPageReady) { // Wait for all settings to be ready for the current set
+        if (!isPageReady) {
             setCompsForFilterKey([]);
             return;
         }
+
         const cacheKey = `${currentSetIdentifier}|${lookupKeyForFilters}`;
         if (cacheRef.current[cacheKey]) {
             setCompsForFilterKey(cacheRef.current[cacheKey]);
             setApiLoading(false);
             return;
         }
-        setApiLoading(true);
-        fetch(
-            `/api/comps?filterKey=${encodeURIComponent(
-                lookupKeyForFilters
-            )}&setIdentifier=${encodeURIComponent(currentSetIdentifier)}`
-        )
-            .then((res) => res.ok ? (res.json() as Promise<PrecomputedComps>) : Promise.reject(new Error(`API Error: ${res.status}`)))
-            .then((data) => {
-                const solutions = data[lookupKeyForFilters]?.solutions || [];
-                cacheRef.current[cacheKey] = solutions;
-                setCompsForFilterKey(solutions);
-            })
-            .catch((err) => {
-                console.error(`Failed to fetch comps for ${currentSetIdentifier} with filters ${lookupKeyForFilters}:`, err);
-                setCompsForFilterKey([]);
-            })
-            .finally(() => setApiLoading(false));
-    }, [lookupKeyForFilters, currentSetIdentifier, isPageReady]); // Depend on isPageReady
+
+        // Fast path for "none" filter - use static JSON
+        if (lookupKeyForFilters === "none") {
+            setApiLoading(true);
+            const setFolder = currentSetIdentifier.toLowerCase();
+            fetch(`/data/${setFolder}_none_bucket.json`)
+                .then((res) => res.ok ? res.json() : Promise.reject(new Error(`Static file not found: ${res.status}`)))
+                .then((data) => {
+                    const solutions = data.none?.solutions || [];
+                    cacheRef.current[cacheKey] = solutions;
+                    setCompsForFilterKey(solutions);
+                })
+                .catch((err) => {
+                    console.warn(`Failed to load static data for ${currentSetIdentifier}, falling back to API:`, err);
+                    // Fallback to API call
+                    return fetchFromAPI();
+                })
+                .finally(() => setApiLoading(false));
+            return;
+        }
+
+        // Regular API call for filtered results
+        fetchFromAPI();
+
+        function fetchFromAPI() {
+            setApiLoading(true);
+            fetch(
+                `/api/comps?filterKey=${encodeURIComponent(
+                    lookupKeyForFilters
+                )}&setIdentifier=${encodeURIComponent(currentSetIdentifier)}`
+            )
+                .then((res) => res.ok ? res.json() : Promise.reject(new Error(`API Error: ${res.status}`)))
+                .then((data) => {
+                    const solutions = data[lookupKeyForFilters]?.solutions || [];
+                    cacheRef.current[cacheKey] = solutions;
+                    setCompsForFilterKey(solutions);
+                })
+                .catch((err) => {
+                    console.error(`Failed to fetch comps for ${currentSetIdentifier} with filters ${lookupKeyForFilters}:`, err);
+                    setCompsForFilterKey([]);
+                })
+                .finally(() => setApiLoading(false));
+        }
+    }, [lookupKeyForFilters, currentSetIdentifier, isPageReady]);
 
     const filteredSolutions = useMemo(() => {
         if (!isPageReady) return [];
@@ -237,7 +264,6 @@ export default function Home() {
                 {isSmallScreen && (
                     <div className="mb-4 p-3 bg-zinc-900/75 border border-zinc-800 rounded shadow-lg">
                         <div className="flex flex-col items-center gap-3">
-                            <span className="text-zinc-300 text-sm font-medium">TFT Set:</span>
                             <div className="flex items-center bg-zinc-800/50 border border-zinc-700 rounded-lg p-1 w-full max-w-sm">
                                 {AVAILABLE_SETS.map((setId) => {
                                     const isActive = setId === currentSetIdentifier;
@@ -248,9 +274,9 @@ export default function Home() {
                                             key={setId}
                                             onClick={() => handleSetChange(setId)}
                                             className={`
-                                flex-1 px-3 py-2 rounded-md text-sm font-medium transition-all duration-200
+                                flex-1 px-3 py-2 rounded-md text-sm font-bold transition-all duration-200
                                 ${isActive
-                                                ? 'bg-blue-600 text-white shadow-md'
+                                                ? 'bg-indigo-800 text-white shadow-md'
                                                 : 'text-zinc-300 hover:text-white hover:bg-zinc-700/50'
                                             }
                             `}
