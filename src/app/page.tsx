@@ -15,10 +15,6 @@ import {
 } from "@/utils/championMapping";
 import {APP_CONFIG} from "@/config/app";
 
-interface PrecomputedComps {
-    [filterKey: string]: { solutions: CompData[] };
-}
-
 interface Group {
     base: CompData;
     variants?: Variant[];
