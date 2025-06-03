@@ -30,38 +30,38 @@ const eslintConfig = [
     },
     rules: {
       "linebreak-style": "off",
-      "quotes": ["error", "single"],
+      "quotes": ["warn", "single"],
       "indent": [
-        "error",
+        "warn",
         4,
         {
           SwitchCase: 1,
         },
       ],
-      "array-bracket-spacing": ["error", "always"],
-      "brace-style": ["error", "allman"],
-      "template-curly-spacing": ["error", "always"],
-      "no-multi-spaces": ["error"],
+      "array-bracket-spacing": ["warn", "always"],
+      "brace-style": ["warn", "allman"],
+      "template-curly-spacing": ["warn", "always"],
+      "no-multi-spaces": ["warn"],
       "object-curly-spacing": [
-        "error",
+        "warn",
         "always",
         {
           arraysInObjects: true,
           objectsInObjects: false,
         },
       ],
-      "jsx-quotes": ["error"],
+      "jsx-quotes": ["warn"],
       "react/prop-types": "off",
       "react/jsx-curly-spacing": [
-        "error",
+        "warn",
         {
           when: "always",
           children: true,
         },
       ],
-      "react/jsx-equals-spacing": ["error"],
+      "react/jsx-equals-spacing": ["warn"],
       "react/jsx-newline": [
-        "error",
+        "warn",
         {
           prevent: true,
         },

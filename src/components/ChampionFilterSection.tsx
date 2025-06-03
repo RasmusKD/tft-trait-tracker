@@ -157,7 +157,6 @@ export default function ChampionFilterSection({
             >
                 <p>Click on a champion image to toggle it individually. Use the tier toggles to enable/disable whole tiers. By default, 1-3 cost champions are enabled.</p>
             </Modal>
-
             { tiers.map((tier, idx) => 
             {
                 const champsInTier = tierMap[tier] || [];

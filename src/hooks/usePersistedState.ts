@@ -25,51 +25,51 @@ export default function usePersistedState<T>(
     const timeoutRef = useRef<number | null>(null);
 
     // Read from localStorage on mount or when key changes
-    useEffect(() => 
+    useEffect(() =>
     {
         setInitialized(false);
         let isMounted = true;
 
-        if (typeof window !== 'undefined') 
+        if (typeof window !== 'undefined')
         {
-            try 
+            try
             {
                 const stored = window.localStorage.getItem(key);
-                if (stored !== null && isMounted) 
+                if (stored !== null && isMounted)
                 {
                     setState(JSON.parse(stored) as T);
                 }
-                else if (isMounted) 
+                else if (isMounted)
                 {
                     setState(typeof defaultValue === 'function' ? (defaultValue as () => T)() : defaultValue);
                 }
             }
-            catch (error) 
+            catch (error)
             {
                 console.warn(`Error reading localStorage key "${ key }":`, error);
-                if (isMounted) 
+                if (isMounted)
                 {
                     setState(typeof defaultValue === 'function' ? (defaultValue as () => T)() : defaultValue);
                 }
             }
-            finally 
+            finally
             {
-                if(isMounted) 
+                if(isMounted)
                 {
                     setInitialized(true);
                 }
             }
         }
-        else 
+        else
         {
             if (isMounted) setInitialized(true);
         }
 
-        return () => 
+        return () =>
         {
             isMounted = false;
         };
-    }, [ key ]);
+    }, [ key, defaultValue ]);
 
     // Write to localStorage when state changes
     useEffect(() => 
