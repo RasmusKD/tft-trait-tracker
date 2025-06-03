@@ -64,10 +64,11 @@ export default function Home()
 
     // Track if the currentSetIdentifier itself has been hydrated
     const [ isSetIdentifierHydrated, setIsSetIdentifierHydrated ] = useState(false);
-    useEffect(() => 
+
+    useEffect(() =>
     {
         let effectiveSet = currentSetIdentifier;
-        if (!AVAILABLE_SETS.includes(currentSetIdentifier)) 
+        if (!AVAILABLE_SETS.includes(currentSetIdentifier))
         {
             effectiveSet = AVAILABLE_SETS[0];
             setCurrentSetIdentifier(effectiveSet);
@@ -77,9 +78,8 @@ export default function Home()
 
 
     // We need to know when these have finished their initial load for the *current* set
-    const [ filters, setFilters, filtersInitialized ] = usePersistedState<Record<string, number>>(
-        'app_emblemFilters', {}, currentSetIdentifier, true // Pass true for 'getInitialized'
-    );
+    const [ filters, setFilters ] = useState<Record<string, number>>({});
+    
     const [ hideTraits, setHideTraits, hideTraitsInitialized ] = usePersistedState<boolean>(
         'app_hideTraits', false, currentSetIdentifier, true
     );
@@ -94,15 +94,15 @@ export default function Home()
     // Update isPageReady when all critical persisted states are initialized for the current set
     useEffect(() => 
     {
-        if (isSetIdentifierHydrated && filtersInitialized && hideTraitsInitialized && compactViewInitialized && championOverridesInitialized) 
+        if (isSetIdentifierHydrated && hideTraitsInitialized && compactViewInitialized && championOverridesInitialized) 
         {
             setIsPageReady(true);
         }
         else 
         {
-            setIsPageReady(false); // If set changes, this will become false until others catch up
+            setIsPageReady(false);
         }
-    }, [ isSetIdentifierHydrated, filtersInitialized, hideTraitsInitialized, compactViewInitialized, championOverridesInitialized ]);
+    }, [ isSetIdentifierHydrated, hideTraitsInitialized, compactViewInitialized, championOverridesInitialized ]);
 
     const championMappingForCurrentSet = useMemo(
         () => isPageReady ? getChampionMappingForSet(currentSetIdentifier) : {},
@@ -266,6 +266,7 @@ export default function Home()
             // When set changes, isPageReady will become false because
             // isSetIdentifierHydrated and other *Initialized flags will reset/re-evaluate.
             // This naturally causes the loader to show.
+            setFilters({}); // Reset set filters
             setCurrentSetIdentifier(newSet);
             setCompsForFilterKey([]); // Clear old data
             cacheRef.current = {}; // Clear API cache

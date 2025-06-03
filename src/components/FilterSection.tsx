@@ -23,7 +23,7 @@ export default function FilterSection({
     setIdentifier,
     filters,
     setFiltersAction,
-}: FilterSectionProps) 
+}: FilterSectionProps)
 {
     const totalBonus = Object.values(filters).reduce(
         (acc, val) => acc + val,
@@ -34,20 +34,22 @@ export default function FilterSection({
     const setConfig = useMemo(() => getSetConfig(setIdentifier), [ setIdentifier ]);
     const setFolder = useMemo(() => setIdentifier.toLowerCase(), [ setIdentifier ]); // e.g., "tftset14"
 
-    const eligibleEmblemTraits = useMemo(() => 
+    const eligibleEmblemTraits = useMemo(() =>
     {
         return setConfig?.eligibleEmblemTraits?.slice().sort() || [];
     }, [ setConfig ]);
 
-    const singleActivationTraits = useMemo(() => 
+    const singleActivationTraits = useMemo(() =>
     {
         return new Set(setConfig?.singleActivationEmblemTraits || []);
     }, [ setConfig ]);
 
+    const hasFilters = useMemo(() => totalBonus > 0, [ totalBonus ]);
+
     const updateFilter = useCallback(
-        (trait: string, delta: number) => 
+        (trait: string, delta: number) =>
         {
-            setFiltersAction((prev) => 
+            setFiltersAction((prev) =>
             {
                 const current = prev[trait] ?? 0;
                 const maxForTrait = singleActivationTraits.has(trait) ? 1 : 2;
@@ -66,7 +68,7 @@ export default function FilterSection({
 
     const resetFilters = () => setFiltersAction({});
 
-    if (!setConfig) 
+    if (!setConfig)
     {
         return (
             <section className="bg-zinc-900/75 border border-zinc-800 shadow-lg rounded p-4 min-w-0">
@@ -75,7 +77,7 @@ export default function FilterSection({
         );
     }
 
-    if (eligibleEmblemTraits.length === 0 && setConfig) 
+    if (eligibleEmblemTraits.length === 0 && setConfig)
     {
         return (
             <section
@@ -111,11 +113,16 @@ export default function FilterSection({
                     </p>
                 </div>
                 <div className="flex gap-2">
-                    <Tooltip text="Reset Filters">
+                    <Tooltip text={ hasFilters ? 'Reset Filters' : 'No filters to reset' }>
                         <button
                             onClick={ resetFilters }
+                            disabled={ !hasFilters }
                             aria-label="Reset Filters"
-                            className="p-2 bg-zinc-800 hover:bg-zinc-700 text-white rounded cursor-pointer"
+                            className={ `p-2 rounded ${
+                                hasFilters
+                                    ? 'bg-zinc-800 hover:bg-zinc-700 text-white cursor-pointer'
+                                    : 'bg-zinc-800/50 text-zinc-500'
+                            }` }
                         >
                             <LuRefreshCw className="w-5 h-5" />
                         </button>
@@ -151,7 +158,7 @@ export default function FilterSection({
                 role="list"
                 className="mt-4 grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-11 2xl:grid-cols-17 gap-2"
             >
-                { eligibleEmblemTraits.map((trait) => 
+                { eligibleEmblemTraits.map((trait) =>
                 {
                     // Cleaned trait name for filename (lowercase, no spaces)
                     const emblemFileName = trait.replace(/[\s/]/g, '').toLowerCase();
@@ -171,7 +178,7 @@ export default function FilterSection({
                                         height={ 48 }
                                         className="object-contain"
                                         draggable={ false }
-                                        onError={ (e) => 
+                                        onError={ (e) =>
                                         {
                                             e.currentTarget.style.display = 'none';
                                             console.warn(`Emblem image not found: ${ imagePath }`);
