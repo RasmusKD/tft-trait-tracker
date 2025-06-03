@@ -1,9 +1,8 @@
-// components/Header.tsx
-"use client";
-import { useState } from "react";
-import Image from "next/image";
-import { LuInfo } from "react-icons/lu";
-import Modal from "./Modal";
+'use client';
+import { useState } from 'react';
+import Image from 'next/image';
+import { LuInfo } from 'react-icons/lu';
+import Modal from './Modal';
 
 interface HeaderProps {
     currentSet: string;
@@ -13,37 +12,39 @@ interface HeaderProps {
 }
 
 export default function Header({
-                                   currentSet,
-                                   availableSets,
-                                   onSetChangeAction,
-                                   showSelectorInHeader,
-                               }: HeaderProps) {
-    const [helpOpen, setHelpOpen] = useState(false);
+    currentSet,
+    availableSets,
+    onSetChangeAction,
+    showSelectorInHeader,
+}: HeaderProps) 
+{
+    const [ helpOpen, setHelpOpen ] = useState(false);
 
     const SetSwitcher = () => (
         <div className="flex items-center bg-zinc-800/50 border border-zinc-700 rounded-lg p-1">
-            {availableSets.map((setId) => {
+            { availableSets.map((setId) => 
+            {
                 const isActive = setId === currentSet;
-                const displayName = setId.replace("TFTSet", "Set ");
+                const displayName = setId.replace('TFTSet', 'Set ');
 
                 return (
                     <button
-                        key={setId}
-                        onClick={() => onSetChangeAction(setId)}
-                        className={`
+                        key={ setId }
+                        onClick={ () => onSetChangeAction(setId) }
+                        className={ `
                             px-4 py-2 rounded-md text-sm font-bold transition-all duration-200
-                            ${isActive
-                            ? 'bg-indigo-800 text-white shadow-md'
-                            : 'text-zinc-300 hover:text-white hover:bg-zinc-700/50'
-                        }
-                        `}
-                        aria-pressed={isActive}
-                        aria-label={`Switch to ${displayName}`}
+                            ${ isActive
+                        ? 'bg-indigo-800 text-white shadow-md'
+                        : 'text-zinc-300 hover:text-white hover:bg-zinc-700/50 cursor-pointer'
+                    }
+                        ` }
+                        aria-pressed={ isActive }
+                        aria-label={ `Switch to ${ displayName }` }
                     >
-                        {displayName}
+                        { displayName }
                     </button>
                 );
-            })}
+            }) }
         </div>
     );
 
@@ -52,7 +53,7 @@ export default function Header({
             <header className="bg-zinc-900/75 border-b border-zinc-800 shadow-md sticky top-0 z-40">
                 <div className="w-full max-w-screen-2xl mx-auto px-6 py-3">
                     <div className="flex items-center justify-between">
-                        {/* Left section - Logo */}
+                        { /* Left section - Logo */ }
                         <div className="flex items-center gap-3">
                             <div className="relative w-12 h-12 md:w-16 md:h-16">
                                 <Image
@@ -61,7 +62,7 @@ export default function Header({
                                     fill
                                     sizes="(max-width: 768px) 48px, 64px"
                                     className="object-contain drop-shadow-[0_0_8px_rgba(255,255,255,0.5)] select-none"
-                                    draggable={false}
+                                    draggable={ false }
                                     priority
                                 />
                             </div>
@@ -69,17 +70,15 @@ export default function Header({
                                 Trait Tracker
                             </h1>
                         </div>
-
-                        {/* Center section - Absolutely positioned for true centering */}
-                        {showSelectorInHeader && (
+                        { /* Center section - Absolutely positioned for true centering */ }
+                        { showSelectorInHeader && (
                             <div className="hidden lg:block absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2">
                                 <SetSwitcher />
                             </div>
-                        )}
-
-                        {/* Right section - Info Button */}
+                        ) }
+                        { /* Right section - Info Button */ }
                         <button
-                            onClick={() => setHelpOpen(true)}
+                            onClick={ () => setHelpOpen(true) }
                             className="p-2 text-zinc-200 hover:text-white hover:bg-zinc-800 rounded cursor-pointer"
                             type="button"
                             aria-label="How the Tool Works"
@@ -90,20 +89,19 @@ export default function Header({
                     </div>
                 </div>
             </header>
-
             <Modal
                 title="How the Tool Works"
-                isOpen={helpOpen}
-                onCloseAction={() => setHelpOpen(false)}
+                isOpen={ helpOpen }
+                onCloseAction={ () => setHelpOpen(false) }
             >
                 <p>
-                    Traittracker.gg helps you easily activate{" "}
+                    Traittracker.gg helps you easily activate{ ' ' }
                     <strong>8 different traits</strong> in a single round — the
                     requirement to trigger the <strong>Trait Tracker augment</strong> in
                     TFT.
                 </p>
                 <p className="mt-2">
-                    When active, the augment gives you{" "}
+                    When active, the augment gives you{ ' ' }
                     <strong>6 random emblems</strong>, so it&#39;s a huge power spike. But
                     finding the right trait combination can be tricky — especially
                     during a game.

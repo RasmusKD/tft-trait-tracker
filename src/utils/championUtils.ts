@@ -1,7 +1,7 @@
 import {
     ChampionData,
     getChampionMappingForSet,
-} from "./championMapping";
+} from './championMapping';
 
 // Cache structure: setIdentifier -> cacheType -> championName -> value
 const setCaches: Record<
@@ -16,16 +16,20 @@ const setCaches: Record<
 function ensureSetCacheInitialized(
     setIdentifier: string,
     championMappingForSet: Record<string, ChampionData>
-) {
-    if (!setCaches[setIdentifier]) {
+) 
+{
+    if (!setCaches[setIdentifier]) 
+    {
         setCaches[setIdentifier] = {};
     }
-    if (!setCaches[setIdentifier].tierCache) {
+    if (!setCaches[setIdentifier].tierCache) 
+    {
         const tierCache: Record<string, number> = {};
         const borderClassCache: Record<string, string> = {};
         const traitsCache: Record<string, string[]> = {};
 
-        Object.entries(championMappingForSet).forEach(([name, data]) => {
+        Object.entries(championMappingForSet).forEach(([ name, data ]) => 
+        {
             tierCache[name] = data.championTier;
             borderClassCache[name] = deriveBorderClass(data.championTier);
             traitsCache[name] = data.traits;
@@ -36,32 +40,36 @@ function ensureSetCacheInitialized(
     }
 }
 
-function deriveBorderClass(tier: number): string {
-    switch (tier) {
+function deriveBorderClass(tier: number): string 
+{
+    switch (tier) 
+    {
         case 1:
-            return "border-gray-400";
+            return 'border-gray-400';
         case 2:
-            return "border-green-500";
+            return 'border-green-500';
         case 3:
-            return "border-blue-500";
+            return 'border-blue-500';
         case 4:
-            return "border-purple-500";
+            return 'border-purple-500';
         case 5:
-            return "border-yellow-500";
+            return 'border-yellow-500';
         default:
-            return "border-gray-400";
+            return 'border-gray-400';
     }
 }
 
 export function sortChampionsByTierAndName(
     setIdentifier: string, // Added parameter
     champions: string[]
-): string[] {
+): string[] 
+{
     const championMapping = getChampionMappingForSet(setIdentifier);
     ensureSetCacheInitialized(setIdentifier, championMapping);
     const tierCache = setCaches[setIdentifier].tierCache!;
 
-    return [...champions].sort((a, b) => {
+    return [ ...champions ].sort((a, b) => 
+    {
         const tierA = tierCache[a] ?? 99;
         const tierB = tierCache[b] ?? 99;
         if (tierA !== tierB) return tierA - tierB;
@@ -72,7 +80,8 @@ export function sortChampionsByTierAndName(
 export function getChampionTier(
     setIdentifier: string,
     championName: string
-): number {
+): number 
+{
     const championMapping = getChampionMappingForSet(setIdentifier);
     ensureSetCacheInitialized(setIdentifier, championMapping);
     return setCaches[setIdentifier].tierCache![championName] ?? 1;
@@ -81,19 +90,21 @@ export function getChampionTier(
 export function getChampionBorderClass(
     setIdentifier: string,
     championName: string
-): string {
+): string 
+{
     const championMapping = getChampionMappingForSet(setIdentifier);
     ensureSetCacheInitialized(setIdentifier, championMapping);
     return (
         setCaches[setIdentifier].borderClassCache![championName] ||
-        "border-gray-400"
+        'border-gray-400'
     );
 }
 
 export function getChampionTraits(
     setIdentifier: string,
     championName: string
-): string[] {
+): string[] 
+{
     const championMapping = getChampionMappingForSet(setIdentifier);
     ensureSetCacheInitialized(setIdentifier, championMapping);
     // Fallback to championMapping[championName] if cache isn't populated for some reason,

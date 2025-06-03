@@ -1,5 +1,5 @@
-"use client";
-import React from "react";
+'use client';
+import React from 'react';
 
 interface TooltipProps {
     /** The content to render inside the tooltip */
@@ -8,10 +8,11 @@ interface TooltipProps {
     children: React.ReactNode;
 }
 
-export default function Tooltip({ text, children }: TooltipProps) {
+export default function Tooltip({ text, children }: TooltipProps) 
+{
     return (
         <div className="relative inline-block group">
-            {children}
+            { children }
             <div
                 role="tooltip"
                 className="
@@ -26,8 +27,8 @@ export default function Tooltip({ text, children }: TooltipProps) {
           pointer-events-none z-10
         "
             >
-                {text}
-                {/* Arrow */}
+                { text }
+                { /* Arrow */ }
                 <div
                     className="
             absolute left-1/2 bottom-0

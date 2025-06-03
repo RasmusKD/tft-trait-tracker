@@ -1,9 +1,12 @@
-export function getChampionDisplayName(championName: string): string {
+export function getChampionDisplayName(championName: string): string 
+{
     // Handle parenthetical variants
-    if (championName.includes('(') && championName.includes(')')) {
+    if (championName.includes('(') && championName.includes(')')) 
+    {
         const match = championName.match(/^(.+?)\s*\((.+?)\)$/);
-        if (match) {
-            const [, baseName, variant] = match;
+        if (match) 
+        {
+            const [ , baseName, variant ] = match;
 
             // Special cases for common long variants
             const variantMap: Record<string, string> = {
@@ -11,12 +14,13 @@ export function getChampionDisplayName(championName: string): string {
             };
 
             const shortVariant = variantMap[variant] || variant;
-            return `${baseName} ${shortVariant}`;
+            return `${ baseName } ${ shortVariant }`;
         }
     }
 
     // Fallback: truncate if still too long
-    if (championName.length > 12) {
+    if (championName.length > 12) 
+    {
         return championName.substring(0, 10) + '...';
     }
 

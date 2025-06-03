@@ -2,7 +2,7 @@ import {
     ChampionData,
     getChampionMappingForSet,
     getTraitThresholdsForSet,
-} from "./championMapping";
+} from './championMapping';
 
 // Cache for reverseTraits: setIdentifier -> championName -> traits[]
 const reverseTraitsCache: Record<string, Record<string, string[]>> = {};
@@ -10,12 +10,15 @@ const reverseTraitsCache: Record<string, Record<string, string[]>> = {};
 function getReverseTraitsForSet(
     setIdentifier: string,
     championMappingForSet: Record<string, ChampionData>
-): Record<string, string[]> {
-    if (reverseTraitsCache[setIdentifier]) {
+): Record<string, string[]> 
+{
+    if (reverseTraitsCache[setIdentifier]) 
+    {
         return reverseTraitsCache[setIdentifier];
     }
     const newReverseTraits: Record<string, string[]> = {};
-    Object.entries(championMappingForSet).forEach(([champ, data]) => {
+    Object.entries(championMappingForSet).forEach(([ champ, data ]) => 
+    {
         newReverseTraits[champ] = data.traits;
     });
     reverseTraitsCache[setIdentifier] = newReverseTraits;
@@ -28,9 +31,10 @@ export function getActivatedTraits(
     setIdentifier: string,
     selectedChampions: string[],
     filters: Record<string, number>
-): string[] {
+): string[] 
+{
     const memoKey =
-        `${setIdentifier}|${selectedChampions.slice().sort().join(",")}|` +
+        `${ setIdentifier }|${ selectedChampions.slice().sort().join(',') }|` +
         JSON.stringify(filters);
     if (activatedMemo[memoKey]) return activatedMemo[memoKey];
 
@@ -43,15 +47,18 @@ export function getActivatedTraits(
     );
 
     const traitCount: Record<string, number> = {};
-    for (const champ of selectedChampions) {
-        (reverseTraits[champ] || []).forEach((trait) => {
+    for (const champ of selectedChampions) 
+    {
+        (reverseTraits[champ] || []).forEach((trait) => 
+        {
             traitCount[trait] = (traitCount[trait] || 0) + 1;
         });
     }
 
     const activated: string[] = [];
-    new Set([...Object.keys(traitCount), ...Object.keys(filters)]).forEach(
-        (trait) => {
+    new Set([ ...Object.keys(traitCount), ...Object.keys(filters) ]).forEach(
+        (trait) => 
+        {
             const total = (traitCount[trait] || 0) + (filters[trait] || 0);
             const threshold = traitThresholds[trait];
             if (threshold && total >= threshold) activated.push(trait);
