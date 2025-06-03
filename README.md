@@ -1,36 +1,50 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# TFT Trait Tracker
 
-## Getting Started
+Trait Tracker is a Next.js application that helps you find champion combinations that activate the **Trait Tracker** augment in Teamfight Tactics. It includes precomputed comps for TFT Set 14 and the Set 10 Revival so you can quickly filter and plan during a match.
 
-First, run the development server:
+## Features
+
+- Optimal compositions for Set 14 and Set 10 Revival
+- Filter by bonus traits (emblems) and selected champions
+- Toggle whole champion tiers on or off
+- Compact or detailed view with optional trait list hiding
+- Filters persist locally for fast reuse
+
+## Installation
+
+Install dependencies with [pnpm](https://pnpm.io):
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+pnpm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Environment Setup
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Create a `.env.local` file in the project root with your MongoDB connection string:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+MONGODB_URI=mongodb://localhost:27017/your-database
+```
 
-## Learn More
+`MONGODB_URI` is required for the `/api/comps` endpoint that loads composition data.
 
-To learn more about Next.js, take a look at the following resources:
+## Running Locally
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Start the development server:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+pnpm dev
+```
 
-## Deploy on Vercel
+Then open [http://localhost:3000](http://localhost:3000) in your browser.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Production Build
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Create an optimized build and run it with:
+
+```bash
+pnpm build
+pnpm start
+```
+
+The built application can be deployed to any Node.js hosting provider.
