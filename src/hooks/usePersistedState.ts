@@ -69,7 +69,8 @@ export default function usePersistedState<T>(
         {
             isMounted = false;
         };
-    }, [ key, defaultValue ]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [ key ]);
 
     // Write to localStorage when state changes
     useEffect(() => 
