@@ -206,7 +206,7 @@ export default function ChampionFilterSection({
                                                 onClick={ () => toggleChampion(champion) }
                                                 aria-pressed={ isEffectivelyEnabled }
                                                 aria-label={ `${ champion } filter ${ isEffectivelyEnabled ? 'on' : 'off' }` }
-                                                className={ ` w-12 h-12 rounded overflow-hidden border-2 cursor-pointer ${ getChampionBorderClass(setIdentifier, champion) } ${ !isEffectivelyEnabled ? 'grayscale hover:grayscale-[0.3]' : '' } transition ` }
+                                                className={ `w-12 h-12 rounded overflow-hidden border-2 cursor-pointer ${ getChampionBorderClass(setIdentifier, champion) } ${ !isEffectivelyEnabled ? 'grayscale hover:grayscale-[0.3]' : '' } transition` }
                                             >
                                                 <Image
                                                     src={ `/champions/${ setFolder }/${ championImageKey }.png` }

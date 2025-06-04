@@ -330,7 +330,7 @@ export default function Home()
                     <div className="block lg:hidden">
                         <button
                             onClick={ () => setShowChampionFiltersMobile((prev) => !prev) }
-                            className="bg-zinc-900/75 border border-zinc-800 text-white px-4 py-2 rounded hover:bg-zinc-800/75 transition w-full"
+                            className="bg-zinc-900/75 border border-zinc-800 text-white px-4 py-2 rounded hover:bg-zinc-800/75 transition w-full cursor-pointer"
                         >
                             { showChampionFiltersMobile ? 'Hide Champion Filters' : 'Show Champion Filters' }
                         </button>
@@ -348,8 +348,10 @@ export default function Home()
                     <section aria-labelledby="comps-heading" className="flex-1 min-w-0">
                         <h2 id="comps-heading" className="sr-only">Team Compositions</h2>
                         <div className="bg-zinc-900/75 border border-zinc-800 shadow-lg rounded p-4 min-w-0 mb-4 flex items-center justify-between">
+                            { !isSmallScreen &&
                             <span className="text-sm text-zinc-200 font-semibold">Display Mode</span>
-                            <div className="flex items-center gap-4">
+                            }
+                            <div className={ `flex items-center gap-4 ${ isSmallScreen ? 'w-full justify-evenly' : '' }`}>
                                 <button
                                     onClick={ () => setCompactView((prev) => !prev) }
                                     aria-label={ compactView ? 'Switch to detailed view' : 'Switch to compact view' }
