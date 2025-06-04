@@ -1,5 +1,5 @@
 export const APP_CONFIG = {
-    version: '1.0.3',
+    version: '1.0.4',
     patch: '14.5',
     name: 'TraitTracker',
     url: 'https://traittracker.gg',

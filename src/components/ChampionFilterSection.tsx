@@ -206,8 +206,7 @@ export default function ChampionFilterSection({
                                                 onClick={ () => toggleChampion(champion) }
                                                 aria-pressed={ isEffectivelyEnabled }
                                                 aria-label={ `${ champion } filter ${ isEffectivelyEnabled ? 'on' : 'off' }` }
-                                                style={ { filter: isEffectivelyEnabled ? 'none' : 'grayscale(1)' } }
-                                                className={ `w-12 h-12 rounded overflow-hidden border-2 cursor-pointer ${ getChampionBorderClass(setIdentifier, champion) }` }
+                                                className={ ` w-12 h-12 rounded overflow-hidden border-2 cursor-pointer ${ getChampionBorderClass(setIdentifier, champion) } ${ !isEffectivelyEnabled ? 'grayscale hover:grayscale-[0.3]' : '' } transition ` }
                                             >
                                                 <Image
                                                     src={ `/champions/${ setFolder }/${ championImageKey }.png` }
@@ -216,7 +215,7 @@ export default function ChampionFilterSection({
                                                     height={ 48 }
                                                     className="object-cover"
                                                     draggable={ false }
-                                                    onError={ (e) =>
+                                                    onError={ (e) => 
                                                     {
                                                         e.currentTarget.style.display = 'none';
                                                         console.warn(
