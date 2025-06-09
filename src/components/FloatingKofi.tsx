@@ -97,7 +97,7 @@ export default function FloatingKofi()
                 className="
           flex items-center
           bg-sky-200 font-semibold text-sky-900
-          shadow-lg ring-3 ring-zinc-700
+          shadow-lg ring-3
           transition-transform duration-300 ease-in-out
           group-hover:scale-105
           rounded-full p-3
