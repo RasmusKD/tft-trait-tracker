@@ -57,7 +57,7 @@ const KofiIcon = () => (
 export default function FloatingKofi()
 {
     const iconRef = useRef<HTMLDivElement>(null);
-    const [isVisible, setIsVisible] = useState(true);
+    const [ isVisible, setIsVisible ] = useState(true);
 
     useEffect(() =>
     {
@@ -69,13 +69,15 @@ export default function FloatingKofi()
         return () => clearTimeout(timer);
     }, []);
 
-    const handleDismiss = (e: React.MouseEvent<HTMLButtonElement>) => {
+    const handleDismiss = (e: React.MouseEvent<HTMLButtonElement>) => 
+    {
         e.preventDefault();
         e.stopPropagation();
         setIsVisible(false);
     };
 
-    if (!isVisible) {
+    if (!isVisible) 
+    {
         return null;
     }
 
