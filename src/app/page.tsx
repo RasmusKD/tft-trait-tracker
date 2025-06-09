@@ -8,6 +8,7 @@ import FilterSection from '../components/FilterSection';
 import ChampionFilterSection from '../components/ChampionFilterSection';
 import CompSection, { CompData, Variant } from '../components/CompSection';
 import Footer from '../components/Footer';
+import FloatingKofi from '../components/FloatingKofi';
 import usePersistedState from '../hooks/usePersistedState';
 import {
     getChampionMappingForSet,
@@ -415,6 +416,7 @@ export default function Home()
                 </div>
             </main>
             <Footer />
+            <FloatingKofi />
             <Script
                 id="trait-tracker-jsonld"
                 type="application/ld+json"
