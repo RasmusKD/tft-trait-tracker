@@ -1,9 +1,8 @@
 'use client';
 
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { FaTimes } from 'react-icons/fa';
 import { APP_CONFIG } from '@/config/app';
-import usePersistedState from '@/hooks/usePersistedState';
 
 const KofiIcon = () => (
     <svg
@@ -58,11 +57,7 @@ const KofiIcon = () => (
 export default function FloatingKofi()
 {
     const iconRef = useRef<HTMLDivElement>(null);
-    const [ dismissUntil, setDismissUntil ] = usePersistedState<number | null>(
-        'kofiDismissedUntil',
-        null
-    );
-    const isVisible = !dismissUntil || Date.now() > dismissUntil;
+    const [isVisible, setIsVisible] = useState(true);
 
     useEffect(() =>
     {
@@ -74,17 +69,13 @@ export default function FloatingKofi()
         return () => clearTimeout(timer);
     }, []);
 
-    const handleDismiss = (e: React.MouseEvent<HTMLButtonElement>) =>
-    {
+    const handleDismiss = (e: React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault();
         e.stopPropagation();
-
-        const oneWeekFromNow = Date.now() + 7 * 24 * 60 * 60 * 1000;
-        setDismissUntil(oneWeekFromNow);
+        setIsVisible(false);
     };
 
-    if (!isVisible)
-    {
+    if (!isVisible) {
         return null;
     }
 
