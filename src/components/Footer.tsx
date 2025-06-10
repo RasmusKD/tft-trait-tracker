@@ -52,15 +52,6 @@ export default function Footer()
                 >
                     Feedback
                 </a>
-                ·
-                <a
-                    href={ APP_CONFIG.author.kofi }
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="hover:text-white underline underline-offset-4"
-                >
-                    Support my work on Ko-fi ☕
-                </a>
             </div>
             <p className="text-xs text-zinc-500 text-center">
                 { getVersionString() }
