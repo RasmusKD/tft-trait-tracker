@@ -352,7 +352,7 @@ export default function Home()
                             { !isSmallScreen &&
                             <span className="text-sm text-zinc-200 font-semibold">Display Mode</span>
                             }
-                            <div className={ `flex items-center gap-4 ${ isSmallScreen ? 'w-full justify-evenly' : '' }`}>
+                            <div className={ `flex items-center gap-4 ${ isSmallScreen ? 'w-full justify-evenly' : '' }` }>
                                 <button
                                     onClick={ () => setCompactView((prev) => !prev) }
                                     aria-label={ compactView ? 'Switch to detailed view' : 'Switch to compact view' }
