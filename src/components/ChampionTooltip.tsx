@@ -43,13 +43,16 @@ export default function ChampionTooltip({
     );
 
     return (
-        <div className="relative group flex flex-col items-center gap-1">
+        <div
+            className="relative group flex flex-col items-center gap-1"
+            style={ { width: size } }
+        >
             <div
                 style={ { width: size, height: size } }
                 className={ `relative border-2 ${ borderClass } rounded overflow-hidden` }
             >
                 <Image
-                    src={ `/champions/${ setFolder }/${ championImageKey }.png` }
+                    src={ `/champions/${ setFolder }/${ championImageKey }.webp` }
                     alt={ champion }
                     fill
                     sizes={ `${ size }px` }
@@ -64,25 +67,27 @@ export default function ChampionTooltip({
                     } }
                 />
             </div>
-            <span className="text-xs font-medium text-zinc-200">{ displayName }</span>
+            <span className="w-full truncate text-center text-xs font-medium text-zinc-200">
+                { displayName }
+            </span>
             <div
                 role="tooltip"
                 id={ tooltipId }
                 className="
-          absolute bottom-[calc(100%+0.5rem)] left-1/2
-          transform -translate-x-1/2 scale-95
-          group-hover:scale-100
-          opacity-0 group-hover:opacity-100
-          transition-all duration-200
-          pointer-events-none z-10
-          w-40 flex flex-col gap-2
-          bg-zinc-800 bg-opacity-90 p-3 rounded-lg
-        "
+      absolute bottom-[calc(100%+0.5rem)] left-1/2
+      transform -translate-x-1/2 scale-95
+      group-hover:scale-100
+      opacity-0 group-hover:opacity-100
+      transition-all duration-200
+      pointer-events-none z-10
+      w-40 flex flex-col gap-2
+      bg-zinc-800 bg-opacity-90 p-3 rounded-lg
+    "
             >
                 <div className="flex items-center justify-between w-full">
                     <p className="font-bold text-sm text-white">{ champion }</p>
                     <div className="flex items-center gap-1">
-                        <GiTwoCoins className="size-4 text-yellow-400" />
+                        <GiTwoCoins className="size-4 text-yellow-400"/>
                         <span className="text-sm text-white">{ tier }</span>
                     </div>
                 </div>
@@ -90,7 +95,7 @@ export default function ChampionTooltip({
                     { traits.map((trait, i) => 
                     {
                         const traitIconFileName = trait.replace(/[\s/]/g, '');
-                        const imagePath = `/trait-icons/${ setFolder }/${ traitIconFileName }.png`;
+                        const imagePath = `/trait-icons/${ setFolder }/${ traitIconFileName }.webp`;
                         return (
                             <span
                                 key={ `${ trait }-${ i }` }
@@ -114,7 +119,7 @@ export default function ChampionTooltip({
                         );
                     }) }
                 </div>
-                <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-zinc-800 rotate-45" />
+                <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-zinc-800 rotate-45"/>
             </div>
         </div>
     );

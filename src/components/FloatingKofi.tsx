@@ -82,7 +82,7 @@ export default function FloatingKofi()
     }
 
     return (
-        <div className="group fixed bottom-5 right-5 z-50">
+        <div className="group fixed bottom-3 right-3 md:bottom-5 md:right-5 z-50">
             <a
                 href={ APP_CONFIG.author.kofi }
                 target="_blank"
@@ -94,10 +94,10 @@ export default function FloatingKofi()
           transition-transform duration-300 ease-in-out
           group-hover:scale-105
           rounded-full p-3
-          opacity-70 group-hover:opacity-100
+          group-hover:opacity-100
 
           /* --- Medium screens and up --- */
-          md:w-auto md:rounded-xl md:py-2 md:pl-3 md:pr-4 md:gap-2
+          md:opacity-70 md:w-auto md:rounded-xl md:py-2 md:pl-3 md:pr-4 md:gap-2
         "
                 aria-label="Support me on Ko-fi"
             >
@@ -108,7 +108,7 @@ export default function FloatingKofi()
             </a>
             <button
                 onClick={ handleDismiss }
-                aria-label="Dismiss Ko-fi button for one week"
+                aria-label="Dismiss Ko-fi button"
                 className="
           absolute -top-2 -right-2
           flex size-6 items-center justify-center

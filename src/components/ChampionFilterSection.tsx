@@ -209,7 +209,7 @@ export default function ChampionFilterSection({
                                                 className={ `w-12 h-12 rounded overflow-hidden border-2 cursor-pointer ${ getChampionBorderClass(setIdentifier, champion) } ${ !isEffectivelyEnabled ? 'grayscale hover:grayscale-[0.3]' : '' } transition` }
                                             >
                                                 <Image
-                                                    src={ `/champions/${ setFolder }/${ championImageKey }.png` }
+                                                    src={ `/champions/${ setFolder }/${ championImageKey }.webp` }
                                                     alt={ champion }
                                                     width={ 48 }
                                                     height={ 48 }
@@ -219,7 +219,7 @@ export default function ChampionFilterSection({
                                                     {
                                                         e.currentTarget.style.display = 'none';
                                                         console.warn(
-                                                            `Champion image not found for filter: /champions/${ setFolder }/${ championImageKey }.png (Champion: ${ champion })`
+                                                            `Champion image not found for filter: /champions/${ setFolder }/${ championImageKey }.webp (Champion: ${ champion })`
                                                         );
                                                     } }
                                                 />

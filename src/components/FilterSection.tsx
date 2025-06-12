@@ -162,7 +162,7 @@ export default function FilterSection({
                 {
                     // Cleaned trait name for filename (lowercase, no spaces)
                     const emblemFileName = trait.replace(/[\s/]/g, '').toLowerCase();
-                    const imagePath = `/emblems/${ setFolder }/${ emblemFileName }.png`;
+                    const imagePath = `/emblems/${ setFolder }/${ emblemFileName }.webp`;
 
                     const count = filters[trait] || 0;
                     const maxForThisTrait = singleActivationTraits.has(trait) ? 1 : 2;

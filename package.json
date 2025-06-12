@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "convert-images": "node scripts/convertToWebp.js",
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
@@ -31,6 +32,7 @@
     "eslint-config-next": "15.3.0",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^5",
+    "sharp": "^0.34.2",
     "tailwindcss": "^4",
     "typescript": "^5"
   }

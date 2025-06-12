@@ -30,6 +30,7 @@ export interface CompSectionProps {
     filters: Record<string, number>;
     compact?: boolean;
     variants?: Variant[];
+    isSmallScreen?: boolean;
 }
 
 export default function CompSection({
@@ -39,6 +40,7 @@ export default function CompSection({
     filters,
     compact = false,
     variants = [],
+    isSmallScreen = false,
 }: CompSectionProps) 
 {
     const [ copiedMain, setCopiedMain ] = useState(false);
@@ -46,9 +48,14 @@ export default function CompSection({
     const [ openDetails, setOpenDetails ] = useState<Record<string, boolean>>({});
     const compId = useId();
 
-    const setConfig = useMemo(() => getSetConfig(setIdentifier), [ setIdentifier ]);
-    const setFolder = useMemo(() => setIdentifier.toLowerCase(), [ setIdentifier ]); // e.g., "tftset14"
-
+    const setConfig = useMemo(
+        () => getSetConfig(setIdentifier),
+        [ setIdentifier ]
+    );
+    const setFolder = useMemo(
+        () => setIdentifier.toLowerCase(),
+        [ setIdentifier ]
+    ); // e.g., "tftset14"
 
     const copyMain = async () => 
     {
@@ -98,12 +105,21 @@ export default function CompSection({
     };
 
     const sortedChampions = useMemo(
-        () => sortChampionsByTierAndName(setIdentifier, compData.selected_champions),
+        () =>
+            sortChampionsByTierAndName(
+                setIdentifier,
+                compData.selected_champions
+            ),
         [ setIdentifier, compData.selected_champions ]
     );
 
     const activatedTraits = useMemo(
-        () => getActivatedTraits(setIdentifier, compData.selected_champions, filters),
+        () =>
+            getActivatedTraits(
+                setIdentifier,
+                compData.selected_champions,
+                filters
+            ),
         [ setIdentifier, compData.selected_champions, filters ]
     );
 
@@ -131,7 +147,10 @@ export default function CompSection({
     {
         return (
             <section className="bg-zinc-900/75 border border-zinc-800 shadow-xl rounded p-4">
-                <p className="text-red-500">Error: Comp details configuration not available for { setIdentifier.replace('TFTSet', 'Set ') }.</p>
+                <p className="text-red-500">
+                    Error: Comp details configuration not available for{ ' ' }
+                    { setIdentifier.replace('TFTSet', 'Set ') }.
+                </p>
             </section>
         );
     }
@@ -143,7 +162,10 @@ export default function CompSection({
         >
             { /* Header */ }
             <div className="flex justify-between items-center border-b border-zinc-800 pb-2">
-                <h2 id={ `${ compId }-title` } className="text-xl text-white font-bold">
+                <h2
+                    id={ `${ compId }-title` }
+                    className="text-xl text-white font-bold"
+                >
                     Comp Details
                 </h2>
                 <div className="flex items-center gap-4">
@@ -151,10 +173,16 @@ export default function CompSection({
                         <span className="font-semibold">{ computedTotal }</span>
                         <GiTwoCoins className="size-5 text-yellow-400" />
                     </div>
-                    <Tooltip text={ copiedMain ? 'Team Code Copied!' : 'Copy Team Code' }>
+                    <Tooltip
+                        text={ copiedMain ? 'Team Code Copied!' : 'Copy Team Code' }
+                    >
                         <button
                             onClick={ copyMain }
-                            aria-label={ copiedMain ? 'Team code copied' : 'Copy team code' }
+                            aria-label={
+                                copiedMain
+                                    ? 'Team code copied'
+                                    : 'Copy team code'
+                            }
                             className="p-2 bg-zinc-800 hover:bg-zinc-700 text-white rounded cursor-pointer"
                         >
                             { copiedMain ? (
@@ -166,11 +194,19 @@ export default function CompSection({
                     </Tooltip>
                     { variantChamps.length > 0 && (
                         <Tooltip
-                            text={ copiedCombo ? 'Team code Copied!' : 'Copy Team Code + Variants' }
+                            text={
+                                copiedCombo
+                                    ? 'Team code Copied!'
+                                    : 'Copy Team Code + Variants'
+                            }
                         >
                             <button
                                 onClick={ copyCombo }
-                                aria-label={ copiedCombo ? 'Combined code copied' : 'Copy combined code' }
+                                aria-label={
+                                    copiedCombo
+                                        ? 'Combined code copied'
+                                        : 'Copy combined code'
+                                }
                                 className="p-2 bg-zinc-800 hover:bg-zinc-700 text-white rounded cursor-pointer"
                             >
                                 { copiedCombo ? (
@@ -189,7 +225,7 @@ export default function CompSection({
                     { activatedTraits.map((trait, i) => 
                     {
                         const traitIconFileName = trait.replace(/[\s/]/g, '');
-                        const imagePath = `/trait-icons/${ setFolder }/${ traitIconFileName }.png`;
+                        const imagePath = `/trait-icons/${ setFolder }/${ traitIconFileName }.webp`;
                         return (
                             <span
                                 key={ `${ trait }-${ i }` }
@@ -205,7 +241,10 @@ export default function CompSection({
                                     draggable={ false }
                                     onError={ (e) => 
                                     {
-                                        e.currentTarget.style.display = 'none'; console.warn(`Trait icon not found: ${ imagePath }`); 
+                                        e.currentTarget.style.display = 'none';
+                                        console.warn(
+                                            `Trait icon not found: ${ imagePath }`
+                                        );
                                     } }
                                 />
                                 { trait }
@@ -214,7 +253,7 @@ export default function CompSection({
                     }) }
                 </div>
             ) }
-            <ul role="list" className="flex flex-wrap gap-4">
+            <ul role="list" className="flex flex-wrap gap-0.25 sm:gap-2 md:gap-4">
                 { sortedChampions.map((champ) => 
                 {
                     const alts = variantMap[champ] || [];
@@ -226,7 +265,7 @@ export default function CompSection({
                             <ChampionTooltip
                                 setIdentifier={ setIdentifier }
                                 champion={ champ }
-                                size={ 64 }
+                                size={ isSmallScreen ? 48 : 64 }
                             />
                             { compact && alts.length > 0 && (
                                 <>
@@ -239,11 +278,11 @@ export default function CompSection({
                                         }
                                         className="mt-1 flex items-center gap-1 text-xs text-blue-400 hover:text-blue-500 cursor-pointer"
                                     >
-                                        <span className="w-4 flex justify-center">
+                                        <span className="w-2 sm:w-4 flex justify-center">
                                             { openDetails[champ] ? (
-                                                <FaChevronDown />
+                                                <FaChevronDown size={ isSmallScreen ? 8 : 12 }/>
                                             ) : (
-                                                <FaChevronRight />
+                                                <FaChevronRight size={ isSmallScreen ? 8 : 12 }/>
                                             ) }
                                         </span>
                                         Variants
@@ -253,7 +292,9 @@ export default function CompSection({
                                             { alts.map((alt) => (
                                                 <ChampionTooltip
                                                     key={ alt }
-                                                    setIdentifier={ setIdentifier }
+                                                    setIdentifier={
+                                                        setIdentifier
+                                                    }
                                                     champion={ alt }
                                                     size={ 48 }
                                                 />

@@ -57,7 +57,7 @@ export default function Header({
                         <div className="flex items-center gap-3">
                             <div className="relative w-12 h-12 md:w-16 md:h-16">
                                 <Image
-                                    src="/logo.png"
+                                    src="/logo.webp"
                                     alt="Trait Tracker Logo"
                                     fill
                                     sizes="(max-width: 768px) 48px, 64px"
@@ -79,7 +79,7 @@ export default function Header({
                         { /* Right section - Info Button */ }
                         <button
                             onClick={ () => setHelpOpen(true) }
-                            className="p-2 text-zinc-200 hover:text-white hover:bg-zinc-800 rounded cursor-pointer"
+                            className="p-2 text-zinc-200 hover:text-white hover:bg-indigo-800 transition rounded-lg cursor-pointer"
                             type="button"
                             aria-label="How the Tool Works"
                         >
