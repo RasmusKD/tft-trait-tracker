@@ -1,6 +1,6 @@
 export const APP_CONFIG = {
     version: '1.1.0',
-    patch: '14.6',
+    patch: '14.7',
     name: 'TraitTracker',
     url: 'https://traittracker.gg',
     description: 'Find optimal champion combinations to activate the Trait Tracker augment in TFT Set 14 and Revival.',
