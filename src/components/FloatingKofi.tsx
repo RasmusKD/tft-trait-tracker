@@ -59,16 +59,6 @@ export default function FloatingKofi()
     const iconRef = useRef<HTMLDivElement>(null);
     const [ isVisible, setIsVisible ] = useState(true);
 
-    useEffect(() =>
-    {
-        const timer = setTimeout(() => 
-        {
-            iconRef.current?.classList.add('animate-wiggle-once');
-        }, 30000); // 30 sek
-
-        return () => clearTimeout(timer);
-    }, []);
-
     const handleDismiss = (e: React.MouseEvent<HTMLButtonElement>) => 
     {
         e.preventDefault();
@@ -97,7 +87,7 @@ export default function FloatingKofi()
           group-hover:opacity-100
 
           /* --- Medium screens and up --- */
-          md:opacity-70 md:w-auto md:rounded-xl md:py-2 md:pl-3 md:pr-4 md:gap-2
+           md:w-auto md:rounded-xl md:py-2 md:pl-3 md:pr-4 md:gap-2
         "
                 aria-label="Support me on Ko-fi"
             >
@@ -114,7 +104,7 @@ export default function FloatingKofi()
           flex size-6 items-center justify-center
           rounded-full bg-zinc-800 text-white
           shadow-md transition-all duration-200
-          opacity-70 group-hover:opacity-100
+          opacity-70
           hover:!opacity-100 hover:scale-110 hover:bg-red-400 cursor-pointer
         "
             >
